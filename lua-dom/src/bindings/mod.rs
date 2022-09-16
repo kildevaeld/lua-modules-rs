@@ -3,6 +3,8 @@ mod element;
 mod selection;
 mod shared;
 
+pub use self::{element::Element, shared::*};
+
 pub fn register_module(vm: &mlua::Lua) -> mlua::Result<()> {
     let package = vm
         .globals()

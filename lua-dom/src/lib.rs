@@ -11,7 +11,7 @@ pub use self::{
     selection::Selection,
 };
 
-mod bindings;
+pub mod bindings;
 
 pub use bindings::register_module;
 
