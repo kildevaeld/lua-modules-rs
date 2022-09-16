@@ -66,6 +66,13 @@ impl UserData for Selection {
             Ok(out)
         });
 
+        methods.add_method("get", |_, this, (idx,): (usize,)| {
+            Ok(this.nodes.get(idx).map(|id| Element {
+                tree: this.tree.clone(),
+                node_id: *id,
+            }))
+        });
+
         methods.add_method("text", |_, this, _: ()| {
             let text = this
                 .nodes
