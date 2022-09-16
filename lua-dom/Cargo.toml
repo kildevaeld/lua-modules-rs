@@ -1,0 +1,23 @@
+[package]
+edition = "2021"
+name = "lua-dom"
+version = "0.1.0"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[features]
+default = ["lua52"]
+lua51 = ["mlua/lua51"]
+lua52 = ["mlua/lua52"]
+lua53 = ["mlua/lua53"]
+lua54 = ["mlua/lua54"]
+luajit = ["mlua/luajit"]
+luau = ["mlua/luau"]
+vendored = ["mlua/vendored"]
+
+[dependencies]
+cssparser = "0.27.2"
+ego-tree = "0.6"
+html5ever = {version = "0.26"}
+itertools = "0.10"
+mlua = {version = "0.8"}
+selectors = "0.22"
