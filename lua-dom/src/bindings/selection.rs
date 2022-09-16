@@ -78,5 +78,10 @@ impl UserData for Selection {
 
             Ok(StringList(text))
         });
+
+        methods.add_method("select", |_, this, (sel,): (mlua::String,)| {
+            let sel = this.select(sel.to_str()?);
+            Ok(sel)
+        });
     }
 }
