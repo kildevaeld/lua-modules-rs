@@ -15,12 +15,18 @@ impl<S: std::fmt::Display + AsRef<str>> UserData for StringRef<S> {
     }
 }
 
-#[derive(Clone, Debug)]
-pub struct StringList<S>(pub Vec<StringRef<S>>);
-
 impl<S: std::fmt::Display> std::fmt::Display for StringRef<S> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.0)
+    }
+}
+
+#[derive(Clone, Debug)]
+pub struct StringList<S>(pub Vec<StringRef<S>>);
+
+impl<S> StringList<S> {
+    pub fn iter<'a>(&'a self) -> impl Iterator<Item = &'a StringRef<S>> {
+        self.0.iter()
     }
 }
 
