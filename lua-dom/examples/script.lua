@@ -1,4 +1,5 @@
 local table = require 'table'
+--- @module 'dom'
 local dom = require 'dom'
 
 
