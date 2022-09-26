@@ -1,9 +1,13 @@
-use crate::{element_ref::ElementRef, node::Node};
+use super::shared::{StringList, StringRef};
+use crate::element_ref::ElementRef;
+use crate::{
+    matcher::{MatchScope, Matcher, Matches},
+    node::Node,
+    selection::Selection,
+};
 use ego_tree::{NodeId, Tree};
 use mlua::UserData;
 use std::rc::Rc;
-
-use super::shared::{StringList, StringRef};
 
 pub struct Element {
     pub tree: Rc<Tree<Node>>,
@@ -34,6 +38,15 @@ impl UserData for Element {
             }
 
             Ok(None)
+        });
+
+        methods.add_method("select", |_, this, args: (mlua::String,)| {
+            let matcher = Matcher::new(args.0.to_str()?).expect("Invalid CSS selector");
+            let root = this.tree.get(this.node_id).unwrap();
+            Ok(Selection::new(
+                this.tree.clone(),
+                Matches::from_one(root, matcher.clone(), MatchScope::IncludeNode).collect(),
+            ))
         });
 
         methods.add_method("classes", |_, this, _: ()| {
