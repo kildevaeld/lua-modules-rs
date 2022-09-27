@@ -24,5 +24,5 @@ selectors = "0.22"
 
 [[example]]
 name = "dom"
-path = "examples/dom"
+path = "examples/dom.rs"
 required-features = ["lua52"]
