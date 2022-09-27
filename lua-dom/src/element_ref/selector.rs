@@ -44,7 +44,7 @@ impl<'a> selectors::Element for ElementRef<'a> {
     }
 
     fn is_same_type(&self, other: &Self) -> bool {
-        element!(self).name == other.value().name
+        element!(self).name == element!(other).name
     }
 
     fn exported_part(&self, _: &LocalName) -> Option<LocalName> {

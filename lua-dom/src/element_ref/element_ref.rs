@@ -32,8 +32,8 @@ impl<'a> ElementRef<'a> {
     }
 
     /// Returns the `Element` referenced by `self`.
-    pub(crate) fn value(&self) -> &'a Element {
-        self.node.value().as_element().unwrap()
+    pub(crate) fn value(&self) -> Option<&'a Element> {
+        self.node.value().as_element()
     }
 
     fn serialize(&self, traversal_scope: TraversalScope) -> String {
@@ -45,6 +45,17 @@ impl<'a> ElementRef<'a> {
         let mut buf = Vec::new();
         serialize(&mut buf, self, opts).unwrap();
         String::from_utf8(buf).unwrap()
+    }
+
+    pub fn node_type(&self) -> String {
+        match self.node.value() {
+            Node::Comment(_) => "comment".to_string(),
+            Node::Doctype(_) => "doctype".to_string(),
+            Node::Element(el) => el.name().to_string(),
+            Node::Fragment => "fragment".to_owned(),
+            Node::Text(_) => "text".to_owned(),
+            _ => "".to_string(),
+        }
     }
 
     /// Returns the HTML of this element.
@@ -61,6 +72,14 @@ impl<'a> ElementRef<'a> {
     pub fn text(&self) -> Text<'a> {
         Text {
             inner: self.traverse(),
+        }
+    }
+
+    pub fn attr(&self, str: impl AsRef<str>) -> Option<&StrTendril> {
+        if let Some(element) = self.node.value().as_element() {
+            element.attr(str.as_ref())
+        } else {
+            None
         }
     }
 }

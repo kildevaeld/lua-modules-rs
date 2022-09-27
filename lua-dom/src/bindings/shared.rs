@@ -9,9 +9,15 @@ impl<S: std::fmt::Display + AsRef<str>> UserData for StringRef<S> {
     fn add_methods<'lua, M: mlua::UserDataMethods<'lua, Self>>(methods: &mut M) {
         methods.add_meta_method(MetaMethod::ToString, |_, this, ()| Ok(this.0.to_string()));
 
+        methods.add_meta_method(MetaMethod::Eq, |_, this, args: mlua::String| {
+            Ok(this.0.as_ref() == args.to_str()?)
+        });
+
         methods.add_method("trim", |_, this, ()| {
             Ok(StringRef(this.0.as_ref().trim().to_string()))
-        })
+        });
+
+        methods.add_method("str", |_, this, ()| Ok(StringRef(this.0.to_string())));
     }
 }
 
@@ -35,7 +41,6 @@ impl<S: std::fmt::Display + AsRef<str> + Clone + 'static> UserData for StringLis
 
     fn add_methods<'lua, M: mlua::UserDataMethods<'lua, Self>>(methods: &mut M) {
         methods.add_method("join", |_, this, (joiner,): (Option<mlua::String>,)| {
-            //
             let joiner = if let Some(joiner) = &joiner {
                 joiner.to_str()?
             } else {
