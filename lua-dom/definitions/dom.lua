@@ -6,10 +6,17 @@ Document = {}
 
 --- @class Selection
 --- @field text fun(this: Selection): StringList
---- @field map fun(this: Selection, cb: fun(): any): any[] 
+--- @field map fun(this: Selection, cb: fun(el: Element, idx: number): any): any[] 
+--- @field select fun(this: Selection, select: string): Selection
+--- @operator index(number): string
+Selection = {}
 
---- @class String
+--- @class Element
+--- @field attr fun(this: Element, name: string): StringRef | nil
+Element = {}
 
+--- @class StringRef
+--- @operator tostring(StringRef): string
 
 --- @class StringList
 --- @field trim fun(this: StringList): StringList
