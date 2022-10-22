@@ -23,8 +23,16 @@ pub fn to_lua<'js>(vm: &'js mlua::Lua, value: Value) -> mlua::Value<'js> {
             mlua::Value::Table(vm.create_table_from(iter).expect("map"))
         }
         Value::List(list) => {
+            let len = list.len();
             let iter = list.into_iter().map(|v: Value| to_lua(vm, v)).enumerate();
-            mlua::Value::Table(vm.create_table_from(iter).expect("list"))
+
+            let mut table = vm.create_table_with_capacity(len, 0).expect("create table");
+
+            for (idx, v) in iter {
+                table.raw_insert(idx, v);
+            }
+
+            mlua::Value::Table(table)
         }
         _ => {
             panic!("unimplemented")
