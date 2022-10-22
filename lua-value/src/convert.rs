@@ -1,13 +1,13 @@
+use super::Val;
 #[cfg(feature = "dom")]
 use lua_dom::{
     bindings::{StringList, StringRef},
     StrTendril,
 };
-
 use value::{Map, Value};
 
-pub fn to_lua<'js>(vm: &'js mlua::Lua, value: Value) -> mlua::Value<'js> {
-    match value {
+pub fn to_lua<'js>(vm: &'js mlua::Lua, value: Value) -> mlua::Result<mlua::Value<'js>> {
+    let ret = match value {
         Value::Bool(b) => mlua::Value::Boolean(b),
         Value::Number(n) => {
             if n.is_float() {
@@ -16,20 +16,20 @@ pub fn to_lua<'js>(vm: &'js mlua::Lua, value: Value) -> mlua::Value<'js> {
                 mlua::Value::Integer(n.as_i64())
             }
         }
-        Value::String(s) => mlua::Value::String(vm.create_string(&s).unwrap()),
+        Value::String(s) => mlua::Value::String(vm.create_string(&s)?),
         Value::Map(m) => {
             //
-            let iter = m.into_iter().map(|(k, v)| (k, to_lua(vm, v)));
-            mlua::Value::Table(vm.create_table_from(iter).expect("map"))
+            let iter = m.into_iter().map(|(k, v)| (k, Val::new(v)));
+            mlua::Value::Table(vm.create_table_from(iter)?)
         }
         Value::List(list) => {
             let len = list.len();
-            let iter = list.into_iter().map(|v: Value| to_lua(vm, v)).enumerate();
+            let iter = list.into_iter().map(|v: Value| Val::new(v)).enumerate();
 
-            let mut table = vm.create_table_with_capacity(len, 0).expect("create table");
+            let table = vm.create_table_with_capacity(len as i32, 0)?;
 
             for (idx, v) in iter {
-                table.raw_insert(idx, v);
+                table.raw_insert(idx as i64, v)?;
             }
 
             mlua::Value::Table(table)
@@ -37,7 +37,9 @@ pub fn to_lua<'js>(vm: &'js mlua::Lua, value: Value) -> mlua::Value<'js> {
         _ => {
             panic!("unimplemented")
         }
-    }
+    };
+
+    Ok(ret)
 }
 
 fn is_array<'lua>(table: mlua::Table<'lua>) -> Result<bool, mlua::Error> {
