@@ -37,6 +37,24 @@ impl From<value::Value> for Val {
     }
 }
 
+#[cfg(feature = "types")]
+impl value_types::FromValue for Val {
+    type Error = std::convert::Infallible;
+
+    fn from_value(value: value::Value) -> Result<Self, Self::Error> {
+        Ok(Val(value))
+    }
+}
+
+#[cfg(feature = "types")]
+impl value_types::IntoValue for Val {
+    type Error = std::convert::Infallible;
+
+    fn into_value(self) -> Result<value::Value, Self::Error> {
+        Ok(self.0)
+    }
+}
+
 impl<'lua> mlua::FromLua<'lua> for Val {
     fn from_lua(lua_value: mlua::Value<'lua>, _lua: &'lua mlua::Lua) -> mlua::Result<Self> {
         Ok(convert::from_lua(lua_value)?.into())

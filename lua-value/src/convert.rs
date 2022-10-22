@@ -78,16 +78,20 @@ pub fn from_lua<'lua>(value: mlua::Value<'lua>) -> Result<Value, mlua::Error> {
             #[cfg(feature = "dom")]
             if user.is::<StringRef<String>>() {
                 let string_ref = user.borrow::<StringRef<String>>()?;
-                return Value::String(string_ref.to_string());
+                return Ok(Value::String(string_ref.to_string()));
             } else if user.is::<lua_dom::bindings::StringList<String>>() {
                 let string_list = user.borrow::<StringList<String>>()?;
-                return Value::List(string_list.iter().map(|m| m.to_string().into()).collect());
+                return Ok(Value::List(
+                    string_list.iter().map(|m| m.to_string().into()).collect(),
+                ));
             } else if user.is::<StringRef<StrTendril>>() {
                 let string_ref = user.borrow::<StringRef<StrTendril>>()?;
-                return Value::String(string_ref.to_string());
+                return Ok(Value::String(string_ref.to_string()));
             } else if user.is::<lua_dom::bindings::StringList<StrTendril>>() {
                 let string_list = user.borrow::<StringList<StrTendril>>()?;
-                return Value::List(string_list.iter().map(|m| m.to_string().into()).collect());
+                return Ok(Value::List(
+                    string_list.iter().map(|m| m.to_string().into()).collect(),
+                ));
             }
 
             return Err(mlua::Error::external("could not serialize userdata"));

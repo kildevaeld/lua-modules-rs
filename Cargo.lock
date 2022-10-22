@@ -238,6 +238,7 @@ dependencies = [
  "lua-dom",
  "mlua",
  "value",
+ "value-types",
 ]
 
 [[package]]
@@ -732,6 +733,14 @@ checksum = "09cc8ee72d2a9becf2f2febe0205bbed8fc6615b7cb429ad062dc7b7ddd036a9"
 name = "value"
 version = "0.1.0"
 source = "git+https://github.com/kildevaeld/value-rs#fa7421b55cd84fc0a50baa60aa1d77ed80d98a2d"
+
+[[package]]
+name = "value-types"
+version = "0.1.0"
+source = "git+https://github.com/kildevaeld/value-rs#fa7421b55cd84fc0a50baa60aa1d77ed80d98a2d"
+dependencies = [
+ "value",
+]
 
 [[package]]
 name = "wasi"
