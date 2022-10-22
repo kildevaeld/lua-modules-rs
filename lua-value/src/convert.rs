@@ -28,12 +28,15 @@ pub fn to_lua<'js>(vm: &'js mlua::Lua, value: Value) -> mlua::Result<mlua::Value
 
             let table = vm.create_table_with_capacity(len as i32, 0)?;
 
+            // table.
+
             for (idx, v) in iter {
-                table.raw_insert(idx as i64, v)?;
+                table.raw_set(idx + 1, v)?;
             }
 
             mlua::Value::Table(table)
         }
+        Value::None => mlua::Value::Nil,
         _ => {
             panic!("unimplemented")
         }
