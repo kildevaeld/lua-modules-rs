@@ -2,6 +2,13 @@ local table = require 'table'
 --- @module 'dom'
 local dom = require 'dom'
 
+function readAll(file)
+    local f = assert(io.open(file, "rb"))
+    local content = f:read("*all")
+    f:close()
+    return content
+end
+
 
 local dom = dom.parse([[
 <ul>

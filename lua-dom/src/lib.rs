@@ -15,6 +15,8 @@ pub mod bindings;
 
 pub use bindings::register_module;
 
+pub use tendril::StrTendril;
+
 #[cfg(test)]
 mod test {
 

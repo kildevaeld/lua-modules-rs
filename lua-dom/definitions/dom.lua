@@ -8,6 +8,7 @@ Document = {}
 --- @field text fun(this: Selection): StringList
 --- @field map fun(this: Selection, cb: fun(el: Element, idx: number): any): any[] 
 --- @field select fun(this: Selection, select: string): Selection
+--- @field get fun(this: Selection, idx: number): Element
 --- @operator index(number): string
 Selection = {}
 
