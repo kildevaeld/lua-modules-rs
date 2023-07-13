@@ -4,5 +4,6 @@ members = [
   "lua-dom",
   # "lua-value",
   "lua-pool",
-  "lua-shell"
+  "lua-shell",
+  "lua-os",
 ]

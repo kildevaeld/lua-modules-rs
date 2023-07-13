@@ -1,0 +1,23 @@
+[package]
+name = "lua-os"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[features]
+send = ["tokio/sync", "locket/tokio", "mlua/send"]
+
+[dependencies]
+mlua = { version = "0.8", features = ["async"] }
+tokio = { version = "1", features = ["fs"] }
+locket = { git = "https://github.com/kildevaeld/locket-rs", features = [
+    "async",
+    "std",
+] }
+futures-lite = { version = "1" }
+
+# async-lock = { version = "2", optional = true }
+
+[dev-dependencies]
+mlua = { version = "0.8", features = ["async", "lua54"] }
+tokio = { version = "1", features = ["fs", "macros", "rt"] }
