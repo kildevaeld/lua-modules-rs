@@ -1,4 +1,4 @@
-use mlua::LuaSerdeExt;
+use mlua::{LuaSerdeExt, ToLua};
 
 pub fn init(vm: &mlua::Lua, module: &mlua::Table<'_>) -> Result<(), mlua::Error> {
     let parse = vm.create_function(|vm, args: mlua::String| {
@@ -21,27 +21,18 @@ pub fn init(vm: &mlua::Lua, module: &mlua::Table<'_>) -> Result<(), mlua::Error>
         Ok(json)
     })?;
 
-    module.set("from_json", parse)?;
-    module.set("to_json", write)?;
+    module.set("decode", parse)?;
+    module.set("encode", write)?;
 
     Ok(())
 }
 
 pub fn register_module(vm: &mlua::Lua) -> mlua::Result<()> {
-    let package = vm
-        .globals()
-        .get::<_, mlua::Table>("package")?
-        .get::<_, mlua::Table>("preload")?;
-
-    let preload = vm.create_function(|vm, ()| {
+    lua_util::module::register(vm, "json", |vm| {
         let table = vm.create_table()?;
 
         init(vm, &table)?;
 
-        Ok(table)
-    })?;
-
-    package.set("json", preload)?;
-
-    Ok(())
+        table.to_lua(vm)
+    })
 }

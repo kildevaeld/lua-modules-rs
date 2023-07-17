@@ -392,6 +392,7 @@ dependencies = [
 name = "lua-json"
 version = "0.1.0"
 dependencies = [
+ "lua-util",
  "mlua",
  "serde_json",
 ]
