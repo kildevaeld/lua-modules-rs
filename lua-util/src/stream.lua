@@ -19,7 +19,7 @@ function Pipe:filter(filter)
     return self
 end
 
-function Pipe:flatten(filter)
+function Pipe:flatten()
     self.stream = Stream.flatten(self.stream)
     return self
 end
@@ -33,8 +33,8 @@ function Stream.pipe(stream)
 end
 
 --- @generic T
---- @param stream function(): T
---- @param filter function(item: T): boolean
+--- @param stream fun(): T
+--- @param filter fun(item: T): boolean
 function Stream.filter(stream, filter)
     return function()
         for n in stream do

@@ -9,7 +9,7 @@ local pipe = stream.pipe(fs.read_dir(".")):filter(function(item)
     return item:type() == "file"
 end):map(function(item)
     return fs.open(item.path):lines()
-end) --:flatten()
+end):flatten()
 
 
 
@@ -18,16 +18,11 @@ end) --:flatten()
 -- end)
 
 for n in pipe do
-    -- print(n.path .. " " .. n:type())
-    -- local file = fs.open(n.path)
+    -- for line in n do
+    --     print("line " .. type(line))
+    -- end
 
-    -- local lines = stream.map(n:lines(), function(item)
-    --     return string.sub(item, 0, 10) or ""
-    -- end)
-
-    for line in n do
-        print("line " .. type(line))
-    end
+    print("line " .. n)
 
     ::continue::
 end
