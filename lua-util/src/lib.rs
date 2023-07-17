@@ -3,8 +3,10 @@ mod types;
 
 const CLASS: &[u8] = include_bytes!("class.lua");
 const STREAM: &[u8] = include_bytes!("stream.lua");
+const UTIL: &[u8] = include_bytes!("util.lua");
 
 pub fn register_modules(vm: &mlua::Lua) -> Result<(), mlua::Error> {
+    module::register(vm, "util", |vm| vm.load(UTIL).eval::<mlua::Value>())?;
     module::register(vm, "class", |vm| vm.load(CLASS).eval::<mlua::Value>())?;
     module::register(vm, "stream", |vm| vm.load(STREAM).eval::<mlua::Value>())?;
 
