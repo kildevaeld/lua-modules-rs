@@ -1,3 +1,12 @@
 [workspace]
 
-members = ["lua-dom", "lua-pool", "lua-shell", "lua-fs", "lua-json", "lua-util"]
+members = [
+    "lua-dom",
+    "lua-pool",
+    "lua-shell",
+    "lua-fs",
+    "lua-json",
+    "lua-util",
+    "lua-core",
+    "lua-http",
+]

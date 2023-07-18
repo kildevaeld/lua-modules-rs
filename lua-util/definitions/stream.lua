@@ -1,11 +1,13 @@
---- @meta stream
+--- @meta core.stream
 
 
 local Stream = {}
 
 
 --- @class Pipe
+--- @operator call:unknown
 local Pipe = {}
+
 
 
 --- @generic T

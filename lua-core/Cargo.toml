@@ -1,0 +1,18 @@
+[package]
+name = "lua-core"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+lua-fs = { path = "../lua-fs" }
+lua-json = { path = "../lua-json" }
+lua-util = { path = "../lua-util" }
+lua-http = { path = "../lua-http" }
+mlua = { version = "0.8" }
+
+
+[dev-dependencies]
+mlua = { version = "0.8", features = ["async", "lua54"] }
+tokio = { version = "1", features = ["fs", "macros", "rt", "io-util"] }

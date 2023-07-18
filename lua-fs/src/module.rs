@@ -1,9 +1,11 @@
 use crate::types::{new_lock, Locket, Lrc};
-use async_trait::async_trait;
-use futures_lite::{Stream, StreamExt};
+use futures_lite::{ready, Future, Stream, StreamExt};
 use locket::{AsyncLockApi, AsyncLocket};
+use lua_util::stream::LuaStream;
 use mlua::{Lua, MetaMethod, RegistryKey, ToLua};
-use std::{ffi::OsStr, os::unix::prelude::FileTypeExt, path::PathBuf, str::FromStr, sync::Arc};
+use std::{
+    ffi::OsStr, os::unix::prelude::FileTypeExt, path::PathBuf, str::FromStr, sync::Arc, task::Poll,
+};
 use tokio::io::{AsyncBufReadExt, AsyncReadExt, BufReader, ReadBuf};
 
 pub fn init(vm: &mlua::Lua, module: &mlua::Table<'_>) -> Result<(), mlua::Error> {
@@ -18,17 +20,17 @@ pub fn init(vm: &mlua::Lua, module: &mlua::Table<'_>) -> Result<(), mlua::Error>
     Ok(())
 }
 
-async fn read_dir(vm: &mlua::Lua, path: mlua::String<'_>) -> mlua::Result<ReadDir> {
+async fn read_dir(_vm: &mlua::Lua, path: mlua::String<'_>) -> mlua::Result<LuaStream<ReadDir>> {
     let path = path.to_str()?;
 
     let stream = tokio::fs::read_dir(path).await?;
 
-    Ok(ReadDir {
-        stream: new_lock(stream),
-    })
+    let stream = tokio_stream::wrappers::ReadDirStream::new(stream);
+
+    Ok(LuaStream::new(ReadDir { stream }))
 }
 
-async fn open_file(vm: &mlua::Lua, path: mlua::String<'_>) -> mlua::Result<File> {
+async fn open_file(_vm: &mlua::Lua, path: mlua::String<'_>) -> mlua::Result<File> {
     let path = path.to_str()?;
 
     let stream = tokio::fs::OpenOptions::default()
@@ -41,18 +43,28 @@ async fn open_file(vm: &mlua::Lua, path: mlua::String<'_>) -> mlua::Result<File>
     })
 }
 
-#[derive(Clone)]
-struct ReadDir {
-    stream: Locket<tokio::fs::ReadDir>,
+pin_project_lite::pin_project! {
+    struct ReadDir {
+        #[pin]
+        stream: tokio_stream::wrappers::ReadDirStream,
+    }
 }
 
-impl mlua::UserData for ReadDir {
-    fn add_methods<'lua, M: mlua::UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_async_meta_method(MetaMethod::Call, |vm, this, _args: ()| async move {
-            let mut lock = this.stream.write().await.map_err(mlua::Error::external)?;
-            let next = lock.next_entry().await?;
-            Ok(next.map(|m| DirEntry { entry: m.into() }))
-        });
+impl Stream for ReadDir {
+    type Item = Result<DirEntry, mlua::Error>;
+    fn poll_next(
+        self: std::pin::Pin<&mut Self>,
+        cx: &mut std::task::Context<'_>,
+    ) -> std::task::Poll<Option<Self::Item>> {
+        let this = self.project();
+        match ready!(this.stream.poll_next(cx)) {
+            Some(entry) => Poll::Ready(Some(
+                entry
+                    .map(|m| DirEntry { entry: m.into() })
+                    .map_err(mlua::Error::external),
+            )),
+            None => Poll::Ready(None),
+        }
     }
 }
 
@@ -104,100 +116,19 @@ pub struct File {
 
 impl mlua::UserData for File {
     fn add_methods<'lua, M: mlua::UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_async_method("lines", |vm, mut this, args: ()| async move {
+        methods.add_async_method("lines", |vm, this, args: ()| async move {
             //
+            let file = this.file.read().await.map_err(mlua::Error::external)?;
 
-            let file = this.file.read().await.unwrap().try_clone().await.unwrap();
+            let file = file.try_clone().await.map_err(mlua::Error::external)?;
 
             let buffer = BufReader::new(file);
 
             let lines = buffer.lines();
 
-            Ok(LuaStream {
-                file: new_lock(tokio_stream::wrappers::LinesStream::new(lines)),
-            })
+            Ok(LuaStream::new(tokio_stream::wrappers::LinesStream::new(
+                lines,
+            )))
         });
-    }
-}
-
-pub struct LuaStream<T> {
-    file: Locket<T>,
-}
-
-impl<T> Clone for LuaStream<T> {
-    fn clone(&self) -> Self {
-        LuaStream {
-            file: self.file.clone(),
-        }
-    }
-}
-
-impl<T> mlua::UserData for LuaStream<T>
-where
-    T: Stream + 'static,
-    T::Item: Resultable,
-    for<'lua> <T::Item as Resultable>::Ok: mlua::ToLua<'lua>,
-    <T::Item as Resultable>::Err: std::error::Error + 'static + Send + Sync,
-    T: Unpin,
-{
-    fn add_methods<'lua, M: mlua::UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_async_meta_method(MetaMethod::Call, |vm, this, _: ()| async move {
-            let mut lock = this.file.write().await.map_err(mlua::Error::external)?;
-
-            let ret = match lock.next().await {
-                Some(ret) => ret.into_result().map_err(mlua::Error::external)?,
-                None => return Ok(mlua::Value::Nil),
-            };
-
-            ret.to_lua(vm)
-        });
-    }
-}
-
-trait Resultable {
-    type Ok;
-    type Err;
-
-    fn into_result(self) -> Result<Self::Ok, Self::Err>;
-}
-
-impl<T, E> Resultable for Result<T, E> {
-    type Err = E;
-    type Ok = T;
-
-    fn into_result(self) -> Result<T, E> {
-        self
-    }
-}
-
-#[async_trait(?Send)]
-trait DynamicStream {
-    type Item;
-    async fn next_item(&mut self) -> Option<Self::Item>;
-}
-
-#[async_trait(?Send)]
-impl<T> DynamicStream for T
-where
-    T: Stream + Unpin,
-{
-    type Item = T::Item;
-
-    async fn next_item(&mut self) -> Option<Self::Item> {
-        <T as StreamExt>::next(self).await
-    }
-}
-
-#[async_trait(?Send)]
-impl<T> DynamicStream for LuaStream<T>
-where
-    T: Stream + Unpin + 'static,
-    T::Item: Resultable,
-{
-    type Item = T::Item;
-
-    async fn next_item(&mut self) -> Option<Self::Item> {
-        let mut lock = self.file.write().await.unwrap();
-        lock.next().await
     }
 }

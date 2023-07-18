@@ -1,8 +1,5 @@
-local table = require 'table'
-local fs = require 'fs'
-local string = require 'string'
-local class = require 'class'
-local stream = require 'stream'
+local fs = require 'core.fs'
+local stream = require 'core.stream'
 
 
 local pipe = stream.pipe(fs.read_dir(".")):filter(function(item)

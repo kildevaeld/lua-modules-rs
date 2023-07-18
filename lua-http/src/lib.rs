@@ -1,11 +1,10 @@
-mod module;
-mod types;
+mod client;
 
 pub fn register_module(vm: &mlua::Lua) -> mlua::Result<()> {
-    lua_util::module::register(vm, "core.fs", |vm| {
+    lua_util::module::register(vm, "core.http", |vm| {
         let table = vm.create_table()?;
 
-        module::init(vm, &table)?;
+        client::init(vm, &table)?;
 
         Ok(mlua::Value::Table(table))
     })?;

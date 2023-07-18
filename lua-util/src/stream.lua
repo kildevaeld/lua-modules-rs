@@ -1,5 +1,5 @@
-local class = require 'class'
-local util = require 'util'
+local class = require 'core.class'
+local util = require 'core.util'
 
 
 local Stream = {}

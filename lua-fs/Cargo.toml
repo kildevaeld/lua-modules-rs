@@ -15,10 +15,9 @@ locket = { git = "https://github.com/kildevaeld/locket-rs", features = [
     "std",
 ] }
 futures-lite = { version = "1" }
-tokio-stream = { version = "0.1", features = ["io-util"] }
+tokio-stream = { version = "0.1", features = ["io-util", "fs"] }
 
-async-trait = { version = "0.1" }
-# async-lock = { version = "2", optional = true }
+pin-project-lite = { version = "0.2" }
 
 lua-util = { path = "../lua-util" }
 
