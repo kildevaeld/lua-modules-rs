@@ -1,3 +1,4 @@
+use crate::worker::Worker;
 use deadpool::{async_trait, managed};
 use std::sync::Arc;
 
@@ -9,8 +10,7 @@ pub struct Manager {
 }
 
 impl Manager {
-    #[allow(unused)]
-    pub fn with<F: Fn(&mlua::Lua) -> Result<(), mlua::Error> + Send + Sync + 'static>(
+    pub fn new<F: Fn(&mlua::Lua) -> Result<(), mlua::Error> + Send + Sync + 'static>(
         mut self,
         with: F,
     ) -> Self {
@@ -21,17 +21,29 @@ impl Manager {
 
 #[async_trait]
 impl managed::Manager for Manager {
-    type Type = mlua::Lua;
+    type Type = Worker;
     type Error = mlua::Error;
 
     async fn create(&self) -> Result<Self::Type, mlua::Error> {
-        let vm = mlua::Lua::new();
+        let worker = Worker::default();
+
+        tracing::debug!("create lua vm");
 
         if let Some(with) = &self.with {
             let with = with.clone();
-            with(&vm)?;
+            #[cfg(feature = "async")]
+            worker
+                .with_async(move |ctx: &mlua::Lua, _table: &mlua::Table| {
+                    let ret = with(ctx);
+                    async move { ret }
+                })
+                .await?;
+            #[cfg(not(feature = "async"))]
+            worker
+                .with_async(move |ctx: &mlua::Lua, _table: mlua::Table<'_>| with(ctx))
+                .await?;
         }
-        Ok(vm)
+        Ok(worker)
     }
 
     async fn recycle(&self, _: &mut Self::Type) -> managed::RecycleResult<Self::Error> {
@@ -39,4 +51,4 @@ impl managed::Manager for Manager {
     }
 }
 
-pub type Pool = managed::Pool<Manager>;
+pub type AsyncPool = managed::Pool<Manager>;

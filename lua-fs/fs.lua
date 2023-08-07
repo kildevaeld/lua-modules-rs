@@ -1,4 +1,4 @@
---- @meta fs
+--- @meta core.fs
 
 
 local FS = {}
@@ -14,6 +14,16 @@ local DirEntry = {}
 
 
 --- @alias FileType "file" | "dir"
+
+
+--- @param path string
+--- @return File
+function FS.open(path) end
+
+--- @class File
+--- @field path string
+--- @field lines fun(): fun(): string
+local File = {}
 
 
 return FS

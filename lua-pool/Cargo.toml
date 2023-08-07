@@ -5,10 +5,19 @@ edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
-[dependencies]
-mlua = {version = "0.8", features = []}
-deadpool = {version = "0.9"}
-futures-channel = { version = "0.3"}
+[features]
+default = []
+async = ["async-trait", "futures-lite", "mlua/async"]
+tokio = ["dep:tokio", "async", "deadpool?/rt_tokio_1"]
+pool = ["deadpool"]
 
-[dev-dependencies]
-mlua = {version = "0.8", features = ["lua54"]}
+[dependencies]
+mlua = { version = "0.8" }
+async-channel = { version = "1" }
+oneshot = { version = "0.1" }
+async-trait = { version = "0.1", optional = true }
+tokio = { version = "1", features = ["rt"], optional = true }
+futures-lite = { version = "1", optional = true }
+
+deadpool = { version = "0.9", optional = true }
+tracing = { version = "0.1" }

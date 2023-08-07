@@ -13,3 +13,5 @@ locket = { git = "https://github.com/kildevaeld/locket-rs", features = [
     "async",
     "std",
 ] }
+
+bytes = { version = "1" }

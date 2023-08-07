@@ -54,7 +54,7 @@ impl Request {
             .await
             .map_err(mlua::Error::external)?;
 
-        todo!()
+        Ok(ClientResponse { resp })
     }
 }
 

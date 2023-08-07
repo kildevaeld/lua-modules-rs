@@ -1,5 +1,4 @@
 mod module;
-mod types;
 
 pub fn register_module(vm: &mlua::Lua) -> mlua::Result<()> {
     lua_util::module::register(vm, "core.fs", |vm| {

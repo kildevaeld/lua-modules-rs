@@ -1,7 +1,9 @@
-use crate::types::{new_lock, Locket, Lrc};
 use futures_lite::{ready, Future, Stream, StreamExt};
 use locket::{AsyncLockApi, AsyncLocket};
-use lua_util::stream::LuaStream;
+use lua_util::{
+    stream::LuaStream,
+    types::{new_lock, Locket, Lrc},
+};
 use mlua::{Lua, MetaMethod, RegistryKey, ToLua};
 use std::{
     ffi::OsStr, os::unix::prelude::FileTypeExt, path::PathBuf, str::FromStr, sync::Arc, task::Poll,

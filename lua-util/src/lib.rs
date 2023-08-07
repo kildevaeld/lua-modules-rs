@@ -1,3 +1,4 @@
+pub mod buffer;
 pub mod stream;
 pub mod types;
 

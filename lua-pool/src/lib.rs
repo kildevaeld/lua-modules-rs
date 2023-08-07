@@ -1,3 +1,12 @@
-mod pool;
+#[cfg(feature = "pool")]
+mod async_pool;
+mod callback;
+mod worker;
+pub use self::{callback::*, worker::Worker};
 
-pub use self::pool::{Manager, Pool};
+#[cfg(feature = "pool")]
+pub mod pool {
+    pub use super::async_pool::*;
+}
+
+pub mod unsend;

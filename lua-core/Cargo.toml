@@ -7,12 +7,13 @@ edition = "2021"
 
 [features]
 send = ["lua-fs/send"]
+http = ["lua-http"]
 
 [dependencies]
 lua-fs = { path = "../lua-fs" }
 lua-json = { path = "../lua-json" }
 lua-util = { path = "../lua-util" }
-lua-http = { path = "../lua-http" }
+lua-http = { path = "../lua-http", optional = true }
 mlua = { version = "0.8" }
 
 
