@@ -1,3 +1,10 @@
+pub fn write_definitions(path: &std::path::Path) -> std::io::Result<()> {
+    lua_json::write_definition(path)?;
+    lua_date::write_definition(path)?;
+    lua_fs::write_definition(path)?;
+    Ok(())
+}
+
 pub fn register_module(vm: &mlua::Lua) -> mlua::Result<()> {
     lua_util::register_modules(vm)?;
     lua_json::register_module(vm)?;

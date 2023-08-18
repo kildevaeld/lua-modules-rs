@@ -1,4 +1,8 @@
+use lua_util::definition;
+
 mod module;
+
+definition!(CORE_FS("core.fs") = "../fs.lua");
 
 pub fn register_module(vm: &mlua::Lua) -> mlua::Result<()> {
     lua_util::module::register(vm, "core.fs", |vm| {

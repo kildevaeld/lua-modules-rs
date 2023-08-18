@@ -1,4 +1,7 @@
+use lua_util::definition;
 use mlua::{LuaSerdeExt, ToLua};
+
+definition!(CORE_JSON("core.json") = "../definitions/core.json.lua");
 
 pub fn init(vm: &mlua::Lua, module: &mlua::Table<'_>) -> Result<(), mlua::Error> {
     let parse = vm.create_function(|vm, args: mlua::String| {
