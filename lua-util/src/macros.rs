@@ -7,7 +7,7 @@ macro_rules! definition {
 
         pub fn write_definition(path: &std::path::Path) -> std::io::Result<()> {
             $(
-                let file_path = path.join($name).with_extension("lua");
+                let file_path = path.join(format!("{}.lua", $name));
                 std::fs::write(file_path, $const)?;
             )+
 
