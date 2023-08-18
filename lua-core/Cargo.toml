@@ -14,6 +14,7 @@ lua-fs = { path = "../lua-fs" }
 lua-json = { path = "../lua-json" }
 lua-util = { path = "../lua-util" }
 lua-http = { path = "../lua-http", optional = true }
+lua-date = { path = "../lua-date" }
 mlua = { version = "0.8" }
 
 

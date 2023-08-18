@@ -811,6 +811,7 @@ dependencies = [
 name = "lua-core"
 version = "0.1.0"
 dependencies = [
+ "lua-date",
  "lua-fs",
  "lua-http",
  "lua-json",

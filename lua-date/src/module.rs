@@ -125,8 +125,6 @@ pub struct LuaDuration(Duration);
 impl mlua::UserData for LuaDuration {}
 
 pub fn init(vm: &mlua::Lua, module: &mlua::Table<'_>) -> Result<(), mlua::Error> {
-    let table = vm.create_table()?;
-
     let now_local_datetime = vm.create_function(|vm, _: ()| {
         let local: DateTime<Local> = Local::now();
         Ok(LuaDateTime::Local(local))
@@ -146,11 +144,9 @@ pub fn init(vm: &mlua::Lua, module: &mlua::Table<'_>) -> Result<(), mlua::Error>
         LuaDateTime::Fixed(date).to_lua(vm)
     })?;
 
-    table.set("now", now_local_datetime)?;
-    table.set("from_rfc2822", parse_from_rfc2822)?;
-    table.set("from_rfc3339", parse_from_rfc3339)?;
-
-    module.set("DateTime", table)?;
+    module.set("now", now_local_datetime)?;
+    module.set("from_rfc2822", parse_from_rfc2822)?;
+    module.set("from_rfc3339", parse_from_rfc3339)?;
 
     Ok(())
 }

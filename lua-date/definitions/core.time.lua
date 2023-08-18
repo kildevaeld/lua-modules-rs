@@ -10,8 +10,9 @@
 --- @field utc fun(): DateTime
 DateTime = {}
 
-local CoreTime = {}
 
+
+local CoreTime;
 
 
 --- @return DateTime | nil
