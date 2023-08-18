@@ -1,6 +1,7 @@
 --- @meta core.fs
 
 
+
 local FS = {}
 
 --- @param path string
@@ -23,6 +24,8 @@ function FS.open(path) end
 --- @class File
 --- @field path string
 --- @field lines fun(): fun(): string
+--- @field read fun(): string
+--- @field readString fun(): string
 local File = {}
 
 

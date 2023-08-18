@@ -2,6 +2,7 @@ pub fn write_definitions(path: &std::path::Path) -> std::io::Result<()> {
     lua_json::write_definition(path)?;
     lua_date::write_definition(path)?;
     lua_fs::write_definition(path)?;
+    lua_util::write_definition(path)?;
     Ok(())
 }
 

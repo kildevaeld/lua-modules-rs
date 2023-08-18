@@ -132,5 +132,25 @@ impl mlua::UserData for File {
                 lines,
             )))
         });
+
+        methods.add_async_method("read", |vm, this, args: ()| async move {
+            //
+            let mut file = this.file.write().await.map_err(mlua::Error::external)?;
+
+            let mut buffer = Vec::default();
+            file.read_to_end(&mut buffer).await?;
+
+            Ok(buffer)
+        });
+
+        methods.add_async_method("readString", |vm, this, args: ()| async move {
+            //
+            let mut file = this.file.write().await.map_err(mlua::Error::external)?;
+
+            let mut buffer = Default::default();
+            file.read_to_string(&mut buffer).await?;
+
+            Ok(buffer)
+        });
     }
 }
