@@ -39,14 +39,12 @@ impl LuaDateTime {
         LuaDateTime::Utc(date)
     }
 
-    fn into_datetime(self) -> DateTime<Utc> {
-        let date = match self {
+    pub fn into_datetime(self) -> DateTime<Utc> {
+        match self {
             LuaDateTime::Fixed(fixed) => fixed.naive_utc().and_utc(),
             LuaDateTime::Local(fixed) => fixed.naive_utc().and_utc(),
             LuaDateTime::Utc(fixed) => fixed,
-        };
-
-        date
+        }
     }
 }
 
