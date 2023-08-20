@@ -1,36 +1,20 @@
-pub fn init<'a>(vm: &'a mlua::Lua) -> mlua::Result<mlua::Value<'a>> {
-    let mut module = vm.create_table()?;
+use lua_util::definition;
+use mlua::ToLua;
 
-    let ls = vm.create_function(|ctx, args: (mlua::String,)| {
-        //
-        Ok(())
-    })?;
+mod exec;
+pub mod module;
+mod shell;
 
-    module.set("ls", ls)?;
-
-    let exec = vm.create_function(|ctx, args: ()| {
-        //
-        Ok(())
-    })?;
-
-    module.set("exec", exec)?;
-
-    Ok(mlua::Value::Table(module))
-}
+definition!(CORE_TIME("core.shell") = "../definitions/core.shell.lua");
 
 pub fn register_module(vm: &mlua::Lua) -> mlua::Result<()> {
-    let package = vm
-        .globals()
-        .get::<_, mlua::Table>("package")?
-        .get::<_, mlua::Table>("preload")?;
+    lua_util::module::register(vm, "core.shell", |vm| {
+        let table = vm.create_table()?;
 
-    let preload = vm.create_function(|vm, ()| {
-        let module = init(vm);
+        let module = module::init(vm, &table)?;
 
-        Ok(module)
+        module.to_lua(vm)
     })?;
-
-    package.set("shell", preload)?;
 
     Ok(())
 }

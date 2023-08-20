@@ -22,7 +22,7 @@ pub fn init(vm: &mlua::Lua, module: &mlua::Table<'_>) -> Result<(), mlua::Error>
     Ok(())
 }
 
-async fn read_dir(_vm: &mlua::Lua, path: mlua::String<'_>) -> mlua::Result<LuaStream<ReadDir>> {
+pub async fn read_dir(_vm: &mlua::Lua, path: mlua::String<'_>) -> mlua::Result<LuaStream<ReadDir>> {
     let path = path.to_str()?;
 
     let stream = tokio::fs::read_dir(path).await?;
@@ -46,7 +46,7 @@ async fn open_file(_vm: &mlua::Lua, path: mlua::String<'_>) -> mlua::Result<File
 }
 
 pin_project_lite::pin_project! {
-    struct ReadDir {
+    pub struct ReadDir {
         #[pin]
         stream: tokio_stream::wrappers::ReadDirStream,
     }
@@ -71,8 +71,14 @@ impl Stream for ReadDir {
 }
 
 #[derive(Clone)]
-struct DirEntry {
+pub struct DirEntry {
     entry: Lrc<tokio::fs::DirEntry>,
+}
+
+impl DirEntry {
+    pub fn path(&self) -> PathBuf {
+        self.entry.path()
+    }
 }
 
 impl mlua::UserData for DirEntry {

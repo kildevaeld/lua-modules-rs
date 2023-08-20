@@ -7,3 +7,17 @@ edition = "2021"
 
 [dependencies]
 mlua = { version = "0.8" }
+tokio = { version = "1", features = ["process"] }
+lua-util = { path = "../lua-util" }
+lua-fs = { path = "../lua-fs" }
+
+
+[dev-dependencies]
+mlua = { version = "0.8", features = ["async", "lua54"] }
+tokio = { version = "1", features = [
+    "fs",
+    "macros",
+    "process",
+    "rt",
+    "io-util",
+] }

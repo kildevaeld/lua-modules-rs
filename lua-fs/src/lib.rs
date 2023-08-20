@@ -1,6 +1,6 @@
 use lua_util::definition;
 
-mod module;
+pub mod module;
 
 definition!(CORE_FS("core.fs") = "../fs.lua");
 

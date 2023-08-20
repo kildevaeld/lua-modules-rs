@@ -3,6 +3,8 @@ pub fn write_definitions(path: &std::path::Path) -> std::io::Result<()> {
     lua_date::write_definition(path)?;
     lua_fs::write_definition(path)?;
     lua_util::write_definition(path)?;
+    #[cfg(feature = "shell")]
+    lua_shell::write_definition(path)?;
     Ok(())
 }
 
@@ -13,6 +15,8 @@ pub fn register_module(vm: &mlua::Lua) -> mlua::Result<()> {
     lua_date::register_module(vm)?;
     #[cfg(feature = "http")]
     lua_http::register_module(vm)?;
+    #[cfg(feature = "shell")]
+    lua_shell::register_module(vm)?;
     Ok(())
 }
 

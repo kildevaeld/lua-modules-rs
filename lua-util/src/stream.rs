@@ -47,7 +47,7 @@ where
     }
 }
 
-trait Resultable {
+pub trait Resultable {
     type Ok;
     type Err;
 
@@ -64,7 +64,7 @@ impl<T, E> Resultable for Result<T, E> {
 }
 
 #[async_trait(?Send)]
-trait DynamicStream {
+pub trait DynamicStream {
     type Item;
     async fn next_item(&mut self) -> Option<Self::Item>;
 }
@@ -92,5 +92,72 @@ where
     async fn next_item(&mut self) -> Option<Self::Item> {
         let mut lock = self.file.write().await.unwrap();
         lock.next().await
+    }
+}
+
+pub trait DynamicStreamExt: DynamicStream {
+    fn map<F>(self, map: F) -> MapStream<Self, F>
+    where
+        Self: Sized,
+    {
+        MapStream { stream: self, map }
+    }
+
+    fn try_map<F>(self, map: F) -> TryMapStream<Self, F>
+    where
+        Self: Sized,
+    {
+        TryMapStream { stream: self, map }
+    }
+
+    fn lua_stream(self) -> LuaStream<Self>
+    where
+        Self: Sized,
+    {
+        LuaStream::new(self)
+    }
+}
+
+impl<T> DynamicStreamExt for T where T: DynamicStream {}
+
+pub struct MapStream<T, F> {
+    stream: T,
+    map: F,
+}
+
+#[async_trait(?Send)]
+impl<T, F, R> DynamicStream for MapStream<T, F>
+where
+    F: Fn(T::Item) -> R,
+    T: DynamicStream,
+{
+    type Item = R;
+
+    async fn next_item(&mut self) -> Option<Self::Item> {
+        let item = self.stream.next_item().await?;
+        Some((self.map)(item))
+    }
+}
+
+pub struct TryMapStream<T, F> {
+    stream: T,
+    map: F,
+}
+
+#[async_trait(?Send)]
+impl<T, F, R> DynamicStream for TryMapStream<T, F>
+where
+    F: Fn(<T::Item as Resultable>::Ok) -> R,
+    T: DynamicStream,
+    T::Item: Resultable,
+{
+    type Item = Result<R, <T::Item as Resultable>::Err>;
+
+    async fn next_item(&mut self) -> Option<Self::Item> {
+        let item = match self.stream.next_item().await?.into_result() {
+            Ok(ret) => ret,
+            Err(err) => return Some(Err(err)),
+        };
+        Some(Ok((self.map)(item)))
     }
 }
