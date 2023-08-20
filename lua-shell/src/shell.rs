@@ -37,20 +37,38 @@ impl mlua::UserData for Shell {
         });
 
         methods.add_async_function("cat", |vm, path: mlua::String| async move {
-            let output = tokio::fs::read_to_string(path.to_str()?)
-                .await
-                .map_err(mlua::Error::external)?;
-
-            Ok(output)
+            lua_fs::module::read_file(vm, path).await
         });
 
-        methods.add_async_function("test", |vm, path: mlua::String| async move {
-            let Ok(meta) = tokio::fs::metadata(path.to_str()?).await else {
+        methods.add_async_function(
+            "write",
+            |vm, args: (mlua::String, mlua::String)| async move {
+                lua_fs::module::write_file(vm, args).await
+            },
+        );
+
+        methods.add_async_function(
+            "test",
+            |_vm, (path, ftype): (mlua::String, Option<mlua::String>)| async move {
+                let Ok(meta) = tokio::fs::metadata(path.to_str()?).await else {
                 return Ok(false)
             };
 
-            Ok(true)
-        });
+                let ret = if let Some(filetype) = ftype {
+                    match filetype.to_str()? {
+                        "file" => meta.is_file(),
+                        "dir" | "directory" => meta.is_dir(),
+                        ty => {
+                            return Err(mlua::Error::external(format!("invalid file type: {ty}")))
+                        }
+                    }
+                } else {
+                    true
+                };
+
+                Ok(ret)
+            },
+        );
 
         methods.add_async_function("mkdir", |vm, path: mlua::String| async move {
             tokio::fs::create_dir_all(path.to_str()?)

@@ -1,6 +1,7 @@
 use futures_lite::{ready, Future, Stream, StreamExt};
 use locket::{AsyncLockApi, AsyncLocket};
 use lua_util::{
+    buffer::LuaBuffer,
     stream::LuaStream,
     types::{new_lock, Locket, Lrc},
 };
@@ -30,6 +31,24 @@ pub async fn read_dir(_vm: &mlua::Lua, path: mlua::String<'_>) -> mlua::Result<L
     let stream = tokio_stream::wrappers::ReadDirStream::new(stream);
 
     Ok(LuaStream::new(ReadDir { stream }))
+}
+
+pub async fn read_file(_vm: &mlua::Lua, path: mlua::String<'_>) -> mlua::Result<LuaBuffer> {
+    let path = path.to_str()?;
+    let bytes = tokio::fs::read(path).await.map_err(mlua::Error::external)?;
+    Ok(bytes.into())
+}
+
+pub async fn write_file(
+    _vm: &mlua::Lua,
+    (path, content): (mlua::String<'_>, mlua::String<'_>),
+) -> mlua::Result<()> {
+    let path = path.to_str()?;
+    tokio::fs::write(path, content)
+        .await
+        .map_err(mlua::Error::external)?;
+
+    Ok(())
 }
 
 async fn open_file(_vm: &mlua::Lua, path: mlua::String<'_>) -> mlua::Result<File> {

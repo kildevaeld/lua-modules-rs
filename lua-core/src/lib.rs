@@ -25,6 +25,21 @@ pub fn register_module(vm: &mlua::Lua) -> mlua::Result<()> {
     Ok(())
 }
 
+pub fn create_vm() -> mlua::Result<mlua::Lua> {
+    let vm = mlua::Lua::new_with(
+        mlua::StdLib::COROUTINE
+            | mlua::StdLib::MATH
+            | mlua::StdLib::PACKAGE
+            | mlua::StdLib::STRING
+            | mlua::StdLib::TABLE,
+        mlua::LuaOptions::default(),
+    )?;
+
+    register_module(&vm)?;
+
+    Ok(vm)
+}
+
 pub mod util {
     pub use lua_util::{module, search_path};
 }

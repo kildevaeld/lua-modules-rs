@@ -11,7 +11,7 @@ struct Cli {
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args = Cli::parse();
 
-    let lua = mlua::Lua::new();
+    let lua = lua_core::create_vm()?;
 
     lua_core::util::search_path::append(&lua, "./lua-core/examples/?.lua")?;
 
