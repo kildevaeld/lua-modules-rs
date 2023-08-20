@@ -1,5 +1,5 @@
 use lua_util::definition;
-use mlua::ToLua;
+use mlua::IntoLua;
 
 mod exec;
 pub mod module;
@@ -13,7 +13,7 @@ pub fn register_module(vm: &mlua::Lua) -> mlua::Result<()> {
 
         let module = module::init(vm, &table)?;
 
-        module.to_lua(vm)
+        module.into_lua(vm)
     })?;
 
     Ok(())

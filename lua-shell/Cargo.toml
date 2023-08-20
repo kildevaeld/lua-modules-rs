@@ -6,14 +6,14 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-mlua = { version = "0.8" }
+mlua = { version = "0.9" }
 tokio = { version = "1", features = ["process"] }
 lua-util = { path = "../lua-util" }
 lua-fs = { path = "../lua-fs" }
 
 
 [dev-dependencies]
-mlua = { version = "0.8", features = ["async", "lua54"] }
+mlua = { version = "0.9", features = ["async", "lua54"] }
 tokio = { version = "1", features = [
     "fs",
     "macros",

@@ -1,7 +1,7 @@
 use std::time::Duration;
 
 use chrono::{DateTime, Datelike, FixedOffset, Local, NaiveDate, TimeZone, Timelike, Utc};
-use mlua::{MetaMethod, ToLua};
+use mlua::{IntoLua, MetaMethod};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum LuaDateTime {
@@ -134,14 +134,14 @@ pub fn init(vm: &mlua::Lua, module: &mlua::Table<'_>) -> Result<(), mlua::Error>
         let Ok(date) = DateTime::parse_from_rfc3339(string.to_str()?) else {
             return Ok(mlua::Nil)
         };
-        LuaDateTime::Fixed(date).to_lua(vm)
+        LuaDateTime::Fixed(date).into_lua(vm)
     })?;
 
     let parse_from_rfc3339 = vm.create_function(|vm, string: mlua::String| {
         let Ok(date) = DateTime::parse_from_rfc3339(string.to_str()?) else {
             return Ok(mlua::Nil)
         };
-        LuaDateTime::Fixed(date).to_lua(vm)
+        LuaDateTime::Fixed(date).into_lua(vm)
     })?;
 
     module.set("now", now_local_datetime)?;

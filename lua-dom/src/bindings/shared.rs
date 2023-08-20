@@ -1,4 +1,4 @@
-use mlua::{MetaMethod, ToLuaMulti, UserData, Value};
+use mlua::{IntoLuaMulti, MetaMethod, UserData, Value};
 
 #[derive(Clone, Debug)]
 pub struct StringRef<S>(pub S);

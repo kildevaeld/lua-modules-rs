@@ -1,7 +1,8 @@
-use std::process::Stdio;
+use std::{ops::Deref, process::Stdio};
 
 use lua_fs::module::DirEntry;
 use lua_util::stream::DynamicStreamExt;
+use mlua::UserDataRef;
 
 #[derive(Debug, Clone)]
 pub struct Exec {
@@ -31,8 +32,8 @@ impl Exec {
 impl mlua::UserData for Exec {
     fn add_methods<'lua, M: mlua::UserDataMethods<'lua, Self>>(methods: &mut M) {
         methods.add_async_method("status", |vm, this, _: ()| async move {
-            let status = tokio::process::Command::new(this.cmd)
-                .args(this.args)
+            let status = tokio::process::Command::new(&this.cmd)
+                .args(&this.args)
                 .status()
                 .await
                 .map_err(mlua::Error::external)?;
@@ -41,8 +42,8 @@ impl mlua::UserData for Exec {
         });
 
         methods.add_async_method("output", |vm, this, _: ()| async move {
-            let status = tokio::process::Command::new(this.cmd)
-                .args(this.args)
+            let status = tokio::process::Command::new(&this.cmd)
+                .args(&this.args)
                 .output()
                 .await
                 .map_err(mlua::Error::external)?;
@@ -50,9 +51,9 @@ impl mlua::UserData for Exec {
             Ok(String::from_utf8(status.stdout).unwrap())
         });
 
-        methods.add_async_method("pipe", |vm, this, exec: Exec| async move {
+        methods.add_async_method("pipe", |vm, this, exec: UserDataRef<Exec>| async move {
             Ok(Pipe {
-                cmds: vec![this, exec],
+                cmds: vec![this.clone(), exec.deref().clone()],
             })
         })
     }
@@ -133,9 +134,9 @@ impl mlua::UserData for Pipe {
             Ok(String::from_utf8(output.stdout).unwrap())
         });
 
-        methods.add_async_method("pipe", |vm, mut this, exec: Exec| async move {
-            this.cmds.push(exec);
-            Ok(this)
+        methods.add_async_method_mut("pipe", |vm, this, exec: UserDataRef<Exec>| async move {
+            this.cmds.push(exec.clone());
+            Ok(this.clone())
         })
     }
 }

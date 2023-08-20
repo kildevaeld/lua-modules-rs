@@ -11,7 +11,7 @@ yaml = ["toback/yaml"]
 ron = ["toback/ron"]
 
 [dependencies]
-mlua = { version = "0.8", features = ["serialize"] }
+mlua = { version = "0.9", features = ["serialize"] }
 toback = { git = "https://github.com/kildevaeld/toback-rs", features = [
     "json",
 ] }

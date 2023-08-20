@@ -20,9 +20,9 @@ lua-date = { path = "../lua-date" }
 lua-shell = { path = "../lua-shell", optional = true }
 lua-crypto = { path = "../lua-crypto", optional = true }
 
-mlua = { version = "0.8" }
+mlua = { version = "0.9" }
 
 
 [dev-dependencies]
-mlua = { version = "0.8", features = ["async", "lua54"] }
+mlua = { version = "0.9", features = ["async", "lua54"] }
 tokio = { version = "1", features = ["fs", "macros", "rt", "io-util"] }

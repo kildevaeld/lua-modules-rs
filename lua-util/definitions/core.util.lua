@@ -5,7 +5,7 @@
 local Util = {}
 
 --- @class Buffer
---- @field toString fun(encoding:Encoding):string
+--- @field toString fun(this: Buffer,encoding:Encoding):string
 --- @field len integer
 Buffer = {}
 

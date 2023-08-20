@@ -7,6 +7,6 @@ edition = "2021"
 
 [dependencies]
 ring = { version = "0.16" }
-mlua = { version = "0.8", features = ["async"] }
+mlua = { version = "0.9", features = ["async"] }
 lua-util = { path = "../lua-util" }
 md5 = { version = "0.7" }

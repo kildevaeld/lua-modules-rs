@@ -1,7 +1,7 @@
 use async_trait::async_trait;
 use futures_lite::{Stream, StreamExt};
 use locket::AsyncLockApi;
-use mlua::{MetaMethod, ToLua};
+use mlua::{IntoLua, MetaMethod};
 
 use crate::types::{new_lock, Locket};
 
@@ -29,7 +29,7 @@ impl<T> mlua::UserData for LuaStream<T>
 where
     T: DynamicStream + 'static,
     T::Item: Resultable,
-    for<'lua> <T::Item as Resultable>::Ok: mlua::ToLua<'lua>,
+    for<'lua> <T::Item as Resultable>::Ok: mlua::IntoLua<'lua>,
     <T::Item as Resultable>::Err: std::error::Error + 'static + Send + Sync,
     T: Unpin,
 {
@@ -42,7 +42,7 @@ where
                 None => return Ok(mlua::Value::Nil),
             };
 
-            ret.to_lua(vm)
+            ret.into_lua(vm)
         });
     }
 }

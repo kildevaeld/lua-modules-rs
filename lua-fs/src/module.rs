@@ -4,7 +4,7 @@ use lua_util::{
     stream::LuaStream,
     types::{new_lock, Locket, Lrc},
 };
-use mlua::{Lua, MetaMethod, RegistryKey, ToLua};
+use mlua::{IntoLua, Lua, MetaMethod, RegistryKey};
 use std::{
     ffi::OsStr, os::unix::prelude::FileTypeExt, path::PathBuf, str::FromStr, sync::Arc, task::Poll,
 };

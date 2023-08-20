@@ -1,5 +1,5 @@
 use lua_util::definition;
-use mlua::{LuaSerdeExt, ToLua};
+use mlua::{IntoLua, LuaSerdeExt};
 
 definition!(CORE_JSON("core.json") = "../definitions/core.json.lua");
 
@@ -36,6 +36,6 @@ pub fn register_module(vm: &mlua::Lua) -> mlua::Result<()> {
 
         init(vm, &table)?;
 
-        table.to_lua(vm)
+        table.into_lua(vm)
     })
 }

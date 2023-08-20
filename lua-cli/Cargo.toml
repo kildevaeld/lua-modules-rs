@@ -10,7 +10,7 @@ path = "src/main.rs"
 name = "blur"
 
 [dependencies]
-mlua = { version = "0.8", features = ["async", "lua54"] }
+mlua = { version = "0.9", features = ["async", "lua54"] }
 tokio = { version = "1", features = ["fs", "macros"] }
 lua-core = { path = "../lua-core", features = ["http", "shell", "crypto"] }
 lua-config = { path = "../lua-config", features = ["toml", "yaml", "ron"] }

@@ -6,6 +6,6 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-mlua = { version = "0.8", features = ["serialize"] }
+mlua = { version = "0.9", features = ["serialize"] }
 serde_json = { version = "1" }
 lua-util = { path = "../lua-util" }

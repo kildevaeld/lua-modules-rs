@@ -12,7 +12,7 @@ tokio = ["dep:tokio", "async", "deadpool?/rt_tokio_1"]
 pool = ["deadpool"]
 
 [dependencies]
-mlua = { version = "0.8" }
+mlua = { version = "0.9" }
 async-channel = { version = "1" }
 oneshot = { version = "0.1" }
 async-trait = { version = "0.1", optional = true }

@@ -1,4 +1,4 @@
-use mlua::ToLua;
+use mlua::IntoLua;
 
 mod module;
 
@@ -8,7 +8,7 @@ pub fn register_module(vm: &mlua::Lua) -> mlua::Result<()> {
     lua_util::module::register(vm, "core.config", |vm| {
         let module = module::init(vm)?;
 
-        module.to_lua(vm)
+        module.into_lua(vm)
     })?;
 
     Ok(())

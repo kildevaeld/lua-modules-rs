@@ -1,6 +1,6 @@
 use crate::element_ref::ElementRef;
 use crate::Selection;
-use mlua::{MetaMethod, ToLuaMulti, UserData, Value};
+use mlua::{IntoLuaMulti, MetaMethod, UserData, Value};
 
 use super::element::Element;
 use super::shared::{StringList, StringRef};
