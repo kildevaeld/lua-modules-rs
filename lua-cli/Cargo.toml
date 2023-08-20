@@ -18,4 +18,6 @@ mlua = { version = "0.9", features = ["async", "lua54", "vendored"] }
 tokio = { version = "1", features = ["fs", "macros"] }
 lua-core = { path = "../lua-core", features = ["http", "shell", "crypto"] }
 lua-config = { path = "../lua-config", features = ["toml", "yaml", "ron"] }
+lua-env = { path = "../lua-env" }
+
 clap = { version = "4", features = ["derive"] }

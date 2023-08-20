@@ -1,8 +1,10 @@
 {
   "profile": {
     "release": {
-      "lto": "fat",
-      "strip": "symbols"
+      "codegen-units": 1,
+      "lto": true,
+      "panic": "abort",
+      "strip": true
     }
   },
   "workspace": {
@@ -18,7 +20,9 @@
       "lua-date",
       "lua-config",
       "lua-cli",
-      "lua-crypto"
+      "lua-crypto",
+      "lua-hbs",
+      "lua-env"
     ]
   }
 }

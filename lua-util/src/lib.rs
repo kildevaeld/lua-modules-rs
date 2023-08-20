@@ -2,6 +2,7 @@
 mod macros;
 
 pub mod buffer;
+pub mod iter;
 pub mod stream;
 pub mod types;
 pub mod value;
