@@ -1,9 +1,11 @@
 local shell = require "core.shell"
 
 
+print("CWD " .. shell.pwd)
+
 print(shell.cat("Cargo.toml"))
 
-shell.sh("cd lua-fs; ls"):status()
+local output = shell.sh("cd lua-fs; ls"):output()
 
 -- local code = shell.exec("rofi -dmenu"):run()
 
