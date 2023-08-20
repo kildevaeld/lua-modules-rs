@@ -1,0 +1,24 @@
+{
+  "profile": {
+    "release": {
+      "lto": "fat",
+      "strip": "symbols"
+    }
+  },
+  "workspace": {
+    "members": [
+      "lua-dom",
+      "lua-pool",
+      "lua-shell",
+      "lua-fs",
+      "lua-json",
+      "lua-util",
+      "lua-core",
+      "lua-http",
+      "lua-date",
+      "lua-config",
+      "lua-cli",
+      "lua-crypto"
+    ]
+  }
+}

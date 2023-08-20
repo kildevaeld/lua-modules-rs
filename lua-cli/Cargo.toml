@@ -5,12 +5,16 @@ edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[features]
+vendored = ["mlua/vendored", "lua-core/vendored"]
+
+
 [[bin]]
 path = "src/main.rs"
 name = "blur"
 
 [dependencies]
-mlua = { version = "0.9", features = ["async", "lua54"] }
+mlua = { version = "0.9", features = ["async", "lua54", "vendored"] }
 tokio = { version = "1", features = ["fs", "macros"] }
 lua-core = { path = "../lua-core", features = ["http", "shell", "crypto"] }
 lua-config = { path = "../lua-config", features = ["toml", "yaml", "ron"] }

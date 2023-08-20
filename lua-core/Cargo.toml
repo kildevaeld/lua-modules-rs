@@ -10,6 +10,7 @@ send = ["lua-fs/send"]
 http = ["lua-http"]
 shell = ["lua-shell"]
 crypto = ["lua-crypto"]
+vendored = ["lua-http?/vendored"]
 
 [dependencies]
 lua-fs = { path = "../lua-fs" }

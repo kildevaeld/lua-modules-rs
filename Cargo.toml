@@ -17,5 +17,7 @@ members = [
 
 
 [profile.release]
-strip = "symbols"
-lto = "fat"
+lto = true
+strip = true
+codegen-units = 1
+panic = "abort"
