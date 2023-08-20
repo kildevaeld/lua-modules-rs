@@ -10,4 +10,5 @@ members = [
     "lua-core",
     "lua-http",
     "lua-date",
+    "lua-config",
 ]

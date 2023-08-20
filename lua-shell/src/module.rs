@@ -115,9 +115,7 @@ impl Pipe {
 
         let mut children = vec![first];
 
-        let len = rest.len();
-
-        for (i, next) in rest.iter().enumerate() {
+        for next in rest.iter() {
             let prev: Stdio = children
                 .last_mut()
                 .unwrap()
@@ -125,15 +123,6 @@ impl Pipe {
                 .take()
                 .expect("")
                 .try_into()?;
-
-            // let child = if i == (len - 1) {
-            //     next.build_cmd().stdin(prev).spawn()?
-            // } else {
-            //     next.build_cmd()
-            //         .stdin(prev)
-            //         .stdout(Stdio::piped())
-            //         .spawn()?
-            // };
 
             let child = next
                 .build_cmd()

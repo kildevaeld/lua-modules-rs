@@ -3,9 +3,12 @@
 
 local Json = {}
 
+--- @param content string
+--- @return unknown
+function Json.decode(content) end
 
-function Json.decode() end
-
-function Json.encode() end
+--- @param content unknown
+--- @return string
+function Json.encode(content) end
 
 return Json

@@ -44,6 +44,22 @@ impl mlua::UserData for Shell {
             Ok(output)
         });
 
+        methods.add_async_function("test", |vm, path: mlua::String| async move {
+            let Ok(meta) = tokio::fs::metadata(path.to_str()?).await else {
+                return Ok(false)
+            };
+
+            Ok(true)
+        });
+
+        methods.add_async_function("mkdir", |vm, path: mlua::String| async move {
+            tokio::fs::create_dir_all(path.to_str()?)
+                .await
+                .map_err(mlua::Error::external)?;
+
+            Ok(())
+        });
+
         methods.add_function("exec", |ctx, args: mlua::String| {
             Ok(Exec::from(args.to_str()?))
         });

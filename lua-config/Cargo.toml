@@ -1,0 +1,20 @@
+[package]
+name = "lua-config"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[features]
+toml = ["toback/toml"]
+yaml = ["toback/yaml"]
+ron = ["toback/ron"]
+
+[dependencies]
+mlua = { version = "0.8", features = ["serialize"] }
+toback = { git = "https://github.com/kildevaeld/toback-rs", features = [
+    "json",
+] }
+lua-util = { path = "../lua-util" }
+serde_json = "1"
+tokio = { version = "1", features = ["fs"] }

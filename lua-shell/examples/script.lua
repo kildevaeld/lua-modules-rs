@@ -5,6 +5,7 @@ print("CWD " .. shell.pwd)
 
 print(shell.cat("Cargo.toml"))
 
+
 local output = shell.sh("cd lua-fs; ls"):output()
 
 -- local code = shell.exec("rofi -dmenu"):run()

@@ -31,8 +31,16 @@ function Shell.sh(cmd) end
 --- @return fun(): string | nil
 function Shell.ls(path) end
 
+--- Cat path
 --- @param path string
 --- @return string
 function Shell.cat(path) end
+
+--- @param path string
+function Shell.mkdir(path) end
+
+--- @param path string
+--- @return boolean
+function Shell.test(path) end
 
 return Shell
