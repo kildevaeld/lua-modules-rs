@@ -15,3 +15,4 @@ locket = { git = "https://github.com/kildevaeld/locket-rs", features = [
 ] }
 
 bytes = { version = "1" }
+data-encoding = { version = "2" }

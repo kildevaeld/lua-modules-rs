@@ -5,6 +5,8 @@ pub fn write_definitions(path: &std::path::Path) -> std::io::Result<()> {
     lua_util::write_definition(path)?;
     #[cfg(feature = "shell")]
     lua_shell::write_definition(path)?;
+    #[cfg(feature = "crypto")]
+    lua_crypto::write_definition(path)?;
     Ok(())
 }
 
@@ -17,6 +19,9 @@ pub fn register_module(vm: &mlua::Lua) -> mlua::Result<()> {
     lua_http::register_module(vm)?;
     #[cfg(feature = "shell")]
     lua_shell::register_module(vm)?;
+    #[cfg(feature = "crypto")]
+    lua_crypto::register_module(vm)?;
+
     Ok(())
 }
 

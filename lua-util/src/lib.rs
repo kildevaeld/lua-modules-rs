@@ -4,6 +4,7 @@ mod macros;
 pub mod buffer;
 pub mod stream;
 pub mod types;
+pub mod value;
 
 definition!(
     CORE_STREAM("core.stream") = "../definitions/core.stream.lua"

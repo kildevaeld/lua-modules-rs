@@ -12,6 +12,7 @@ members = [
     "lua-date",
     "lua-config",
     "lua-cli",
+    "lua-crypto",
 ]
 
 

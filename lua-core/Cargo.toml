@@ -9,6 +9,7 @@ edition = "2021"
 send = ["lua-fs/send"]
 http = ["lua-http"]
 shell = ["lua-shell"]
+crypto = ["lua-crypto"]
 
 [dependencies]
 lua-fs = { path = "../lua-fs" }
@@ -17,6 +18,8 @@ lua-util = { path = "../lua-util" }
 lua-http = { path = "../lua-http", optional = true }
 lua-date = { path = "../lua-date" }
 lua-shell = { path = "../lua-shell", optional = true }
+lua-crypto = { path = "../lua-crypto", optional = true }
+
 mlua = { version = "0.8" }
 
 
