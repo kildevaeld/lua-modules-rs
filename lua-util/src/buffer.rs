@@ -16,11 +16,11 @@ impl From<Vec<u8>> for LuaBuffer {
 
 impl mlua::UserData for LuaBuffer {
     fn add_fields<'lua, F: mlua::UserDataFields<'lua, Self>>(fields: &mut F) {
-        fields.add_field_method_get("length", |vm, this| Ok(this.0.len()))
+        fields.add_field_method_get("length", |_vm, this| Ok(this.0.len()))
     }
 
     fn add_methods<'lua, M: mlua::UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_method("toString", |vm, this, encoding: mlua::String| {
+        methods.add_method("toString", |_vm, this, encoding: mlua::String| {
             let bytes = this.0.chunk();
 
             let out = match encoding.to_str()? {

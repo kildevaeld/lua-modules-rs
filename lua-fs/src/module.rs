@@ -1,15 +1,15 @@
-use futures_lite::{ready, Future, Stream, StreamExt};
-use locket::{AsyncLockApi, AsyncLocket};
+use futures_lite::{ready, Stream, StreamExt};
+use locket::{AsyncLockApi};
 use lua_util::{
     buffer::LuaBuffer,
     stream::LuaStream,
     types::{new_lock, Locket, Lrc},
 };
-use mlua::{IntoLua, Lua, MetaMethod, RegistryKey};
+
 use std::{
-    ffi::OsStr, os::unix::prelude::FileTypeExt, path::PathBuf, str::FromStr, sync::Arc, task::Poll,
+    os::unix::prelude::FileTypeExt, path::PathBuf, task::Poll,
 };
-use tokio::io::{AsyncBufReadExt, AsyncReadExt, BufReader, ReadBuf};
+use tokio::io::{AsyncBufReadExt, AsyncReadExt, BufReader};
 
 pub fn init(vm: &mlua::Lua, module: &mlua::Table<'_>) -> Result<(), mlua::Error> {
     let read_dir = vm.create_async_function(read_dir)?;
@@ -102,7 +102,7 @@ impl DirEntry {
 
 impl mlua::UserData for DirEntry {
     fn add_fields<'lua, F: mlua::UserDataFields<'lua, Self>>(fields: &mut F) {
-        fields.add_field_method_get("path", |vm, this| {
+        fields.add_field_method_get("path", |_vm, this| {
             let path = this.entry.path();
             Ok(path.to_string_lossy().to_string())
         });
@@ -143,7 +143,7 @@ pub struct File {
 
 impl mlua::UserData for File {
     fn add_methods<'lua, M: mlua::UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_async_method("lines", |vm, this, args: ()| async move {
+        methods.add_async_method("lines", |_vm, this, _args: ()| async move {
             //
             let file = this.file.read().await.map_err(mlua::Error::external)?;
 
@@ -158,7 +158,7 @@ impl mlua::UserData for File {
             )))
         });
 
-        methods.add_async_method("read", |vm, this, args: ()| async move {
+        methods.add_async_method("read", |_vm, this, _args: ()| async move {
             //
             let mut file = this.file.write().await.map_err(mlua::Error::external)?;
 
@@ -168,7 +168,7 @@ impl mlua::UserData for File {
             Ok(buffer)
         });
 
-        methods.add_async_method("readString", |vm, this, args: ()| async move {
+        methods.add_async_method("readString", |_vm, this, _args: ()| async move {
             //
             let mut file = this.file.write().await.map_err(mlua::Error::external)?;
 

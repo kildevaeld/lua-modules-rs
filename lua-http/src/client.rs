@@ -1,9 +1,9 @@
-use lua_util::types::Locket;
-use mlua::{FromLua, MetaMethod};
-use reqwest::{IntoUrl, Method};
+
+use mlua::{MetaMethod};
+use reqwest::{Method};
 
 pub fn init(vm: &mlua::Lua, table: &mlua::Table) -> mlua::Result<()> {
-    let client_new = vm.create_function(|vm, _: ()| {
+    let client_new = vm.create_function(|_vm, _: ()| {
         let client = reqwest::Client::new();
         Ok(Client { client })
     })?;
@@ -20,7 +20,7 @@ pub struct Client {
 
 impl mlua::UserData for Client {
     fn add_methods<'lua, M: mlua::UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_method("get", |vm, this, url: String| {
+        methods.add_method("get", |_vm, this, url: String| {
             Ok(Request::new(this.client.clone(), Method::GET, url))
         })
     }
@@ -60,7 +60,7 @@ impl Request {
 
 impl mlua::UserData for Request {
     fn add_methods<'lua, M: mlua::UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_async_meta_method(MetaMethod::Call, |vm, this, _: ()| async move {
+        methods.add_async_meta_method(MetaMethod::Call, |_vm, _this, _: ()| async move {
             //
 
             Ok(())

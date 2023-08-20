@@ -1,6 +1,6 @@
 use crate::element_ref::ElementRef;
 use crate::Selection;
-use mlua::{IntoLuaMulti, MetaMethod, UserData, Value};
+use mlua::{MetaMethod, UserData};
 
 use super::element::Element;
 use super::shared::{StringList, StringRef};
@@ -108,8 +108,7 @@ impl UserData for Selection {
                 .nodes
                 .iter()
                 .map(|next| this.tree.get(*next).unwrap())
-                .map(|m| ElementRef::new(m).text())
-                .flatten()
+                .flat_map(|m| ElementRef::new(m).text())
                 .map(|m| StringRef(m.clone()))
                 .collect();
 

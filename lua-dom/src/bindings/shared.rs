@@ -1,4 +1,4 @@
-use mlua::{IntoLuaMulti, MetaMethod, UserData, Value};
+use mlua::{MetaMethod, UserData};
 
 #[derive(Clone, Debug)]
 pub struct StringRef<S>(pub S);
@@ -31,7 +31,7 @@ impl<S: std::fmt::Display> std::fmt::Display for StringRef<S> {
 pub struct StringList<S>(pub Vec<StringRef<S>>);
 
 impl<S> StringList<S> {
-    pub fn iter<'a>(&'a self) -> impl Iterator<Item = &'a StringRef<S>> {
+    pub fn iter(&self) -> impl Iterator<Item = &'_ StringRef<S>> {
         self.0.iter()
     }
 }

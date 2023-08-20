@@ -15,7 +15,7 @@ pub struct Element {
 }
 
 impl Element {
-    pub fn element_ref<'a>(&'a self) -> ElementRef<'a> {
+    pub fn element_ref(&self) -> ElementRef<'_> {
         let node = unsafe { self.tree.get_unchecked(self.node_id) };
         ElementRef { node }
     }

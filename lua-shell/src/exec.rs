@@ -1,6 +1,6 @@
 use std::{ops::Deref, process::Stdio};
 
-use lua_fs::module::DirEntry;
+
 use lua_util::stream::DynamicStreamExt;
 use mlua::UserDataRef;
 
@@ -31,7 +31,7 @@ impl Exec {
 
 impl mlua::UserData for Exec {
     fn add_methods<'lua, M: mlua::UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_async_method("status", |vm, this, _: ()| async move {
+        methods.add_async_method("status", |_vm, this, _: ()| async move {
             let status = tokio::process::Command::new(&this.cmd)
                 .args(&this.args)
                 .status()
@@ -41,7 +41,7 @@ impl mlua::UserData for Exec {
             Ok(status.code().unwrap_or_default())
         });
 
-        methods.add_async_method("output", |vm, this, _: ()| async move {
+        methods.add_async_method("output", |_vm, this, _: ()| async move {
             let status = tokio::process::Command::new(&this.cmd)
                 .args(&this.args)
                 .output()
@@ -51,7 +51,7 @@ impl mlua::UserData for Exec {
             Ok(String::from_utf8(status.stdout).unwrap())
         });
 
-        methods.add_async_method("pipe", |vm, this, exec: UserDataRef<Exec>| async move {
+        methods.add_async_method("pipe", |_vm, this, exec: UserDataRef<Exec>| async move {
             Ok(Pipe {
                 cmds: vec![this.clone(), exec.deref().clone()],
             })
@@ -74,9 +74,9 @@ impl Pipe {
 
         let mut children = vec![first];
 
-        let len = rest.len();
+        let _len = rest.len();
 
-        for (i, next) in rest.iter().enumerate() {
+        for (_i, next) in rest.iter().enumerate() {
             let prev: Stdio = children
                 .last_mut()
                 .unwrap()
@@ -115,7 +115,7 @@ impl Pipe {
 
 impl mlua::UserData for Pipe {
     fn add_methods<'lua, M: mlua::UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_async_method("status", |vm, this, _: ()| async move {
+        methods.add_async_method("status", |_vm, this, _: ()| async move {
             let mut child = this.run().await.map_err(mlua::Error::external)?;
 
             let output = child.wait().await.map_err(mlua::Error::external)?;
@@ -123,7 +123,7 @@ impl mlua::UserData for Pipe {
             Ok(output.code().unwrap_or_default())
         });
 
-        methods.add_async_method("output", |vm, this, _: ()| async move {
+        methods.add_async_method("output", |_vm, this, _: ()| async move {
             let child = this.run().await.map_err(mlua::Error::external)?;
 
             let output = child
@@ -134,7 +134,7 @@ impl mlua::UserData for Pipe {
             Ok(String::from_utf8(output.stdout).unwrap())
         });
 
-        methods.add_async_method_mut("pipe", |vm, this, exec: UserDataRef<Exec>| async move {
+        methods.add_async_method_mut("pipe", |_vm, this, exec: UserDataRef<Exec>| async move {
             this.cmds.push(exec.clone());
             Ok(this.clone())
         })

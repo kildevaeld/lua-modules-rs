@@ -70,7 +70,7 @@ impl mlua::UserData for Shell {
             },
         );
 
-        methods.add_async_function("mkdir", |vm, path: mlua::String| async move {
+        methods.add_async_function("mkdir", |_vm, path: mlua::String| async move {
             tokio::fs::create_dir_all(path.to_str()?)
                 .await
                 .map_err(mlua::Error::external)?;
@@ -78,11 +78,11 @@ impl mlua::UserData for Shell {
             Ok(())
         });
 
-        methods.add_function("exec", |ctx, args: mlua::String| {
+        methods.add_function("exec", |_ctx, args: mlua::String| {
             Ok(Exec::from(args.to_str()?))
         });
 
-        methods.add_function("sh", |ctx, args: mlua::String| {
+        methods.add_function("sh", |_ctx, args: mlua::String| {
             Ok(Exec::new(
                 "sh".to_string(),
                 vec!["-c".to_string(), args.to_str()?.to_string()],

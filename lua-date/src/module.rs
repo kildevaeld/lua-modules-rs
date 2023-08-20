@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-use chrono::{DateTime, Datelike, FixedOffset, Local, NaiveDate, TimeZone, Timelike, Utc};
+use chrono::{DateTime, Datelike, FixedOffset, Local, NaiveDate, Timelike, Utc};
 use mlua::{IntoLua, MetaMethod};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
@@ -112,7 +112,7 @@ impl mlua::UserData for LuaDateTime {
     fn add_methods<'lua, M: mlua::UserDataMethods<'lua, Self>>(methods: &mut M) {
         methods.add_method("utc", |_, this, _: ()| Ok(this.into_utc()));
 
-        methods.add_meta_method(MetaMethod::ToString, |vm, this, _: ()| {
+        methods.add_meta_method(MetaMethod::ToString, |_vm, this, _: ()| {
             Ok(do_match!(this, |e| e.to_rfc3339()))
         });
     }
@@ -125,7 +125,7 @@ pub struct LuaDuration(Duration);
 impl mlua::UserData for LuaDuration {}
 
 pub fn init(vm: &mlua::Lua, module: &mlua::Table<'_>) -> Result<(), mlua::Error> {
-    let now_local_datetime = vm.create_function(|vm, _: ()| {
+    let now_local_datetime = vm.create_function(|_vm, _: ()| {
         let local: DateTime<Local> = Local::now();
         Ok(LuaDateTime::Local(local))
     })?;

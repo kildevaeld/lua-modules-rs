@@ -151,7 +151,7 @@ impl Worker {
                     ret
                 }
                 Err(err) => {
-                    mark_ready.send(Err((err))).ok();
+                    mark_ready.send(Err(err)).ok();
                     return;
                 }
             };

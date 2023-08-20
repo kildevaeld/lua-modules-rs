@@ -1,11 +1,11 @@
-use std::process::Stdio;
 
-use lua_fs::module::DirEntry;
-use lua_util::stream::DynamicStreamExt;
+
+
+
 
 use crate::shell::Shell;
 
-pub fn init<'a>(vm: &'a mlua::Lua, module: &mlua::Table<'a>) -> mlua::Result<Shell> {
+pub fn init<'a>(vm: &'a mlua::Lua, _module: &mlua::Table<'a>) -> mlua::Result<Shell> {
     /*
     let ls = vm.create_async_function(|vm, path: mlua::String| async move {
         let stream = lua_fs::module::read_dir(vm, path).await?;

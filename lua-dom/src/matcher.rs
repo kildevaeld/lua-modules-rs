@@ -60,7 +60,7 @@ impl<T> Matches<T> {
         Self {
             roots: vec![node],
             nodes: vec![],
-            matcher: matcher,
+            matcher,
             set: HashSet::new(),
             match_scope,
         }
@@ -74,7 +74,7 @@ impl<T> Matches<T> {
         Self {
             roots: nodes.collect(),
             nodes: vec![],
-            matcher: matcher,
+            matcher,
             set: HashSet::new(),
             match_scope,
         }
@@ -96,7 +96,7 @@ impl<'a> Iterator for Matches<NodeRef<'a, Node>> {
                 match self.match_scope {
                     MatchScope::IncludeNode => self.nodes.insert(0, root),
                     MatchScope::ChildrenOnly => {
-                        for child in root.children().into_iter().rev() {
+                        for child in root.children().rev() {
                             self.nodes.insert(0, child);
                         }
                     }
@@ -106,11 +106,11 @@ impl<'a> Iterator for Matches<NodeRef<'a, Node>> {
             while !self.nodes.is_empty() {
                 let node = self.nodes.remove(0);
 
-                for node in node.children().into_iter().rev() {
+                for node in node.children().rev() {
                     self.nodes.insert(0, node);
                 }
 
-                if self.matcher.match_element(&ElementRef::new(node.clone())) {
+                if self.matcher.match_element(&ElementRef::new(node)) {
                     if self.set.contains(&node.id()) {
                         continue;
                     }
