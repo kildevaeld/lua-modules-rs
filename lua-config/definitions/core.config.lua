@@ -9,6 +9,6 @@ function Config.read(path) end
 
 --- @param path string
 --- @param content unknown
-function Config.read(path, content) end
+function Config.write(path, content) end
 
 return Config

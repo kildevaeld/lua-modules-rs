@@ -5,7 +5,10 @@ pub mod buffer;
 pub mod stream;
 pub mod types;
 
-definition!(CORE_STREAM("core.stream") = "../definitions/core.stream.lua");
+definition!(
+    CORE_STREAM("core.stream") = "../definitions/core.stream.lua"
+    CORE_UTIL("core.util") = "../definitions/core.util.lua"
+);
 
 const CLASS: &[u8] = include_bytes!("class.lua");
 const STREAM: &[u8] = include_bytes!("stream.lua");

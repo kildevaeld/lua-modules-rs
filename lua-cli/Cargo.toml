@@ -1,0 +1,17 @@
+[package]
+name = "lua-cli"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[[bin]]
+path = "src/main.rs"
+name = "blur"
+
+[dependencies]
+mlua = { version = "0.8", features = ["async", "lua54", "vendored"] }
+tokio = { version = "1", features = ["fs", "macros"] }
+lua-core = { path = "../lua-core", features = ["http", "shell"] }
+lua-config = { path = "../lua-config", features = ["toml", "yaml", "ron"] }
+clap = { version = "4", features = ["derive"] }

@@ -11,4 +11,10 @@ members = [
     "lua-http",
     "lua-date",
     "lua-config",
+    "lua-cli",
 ]
+
+
+[profile.release]
+strip = "symbols"
+lto = "fat"
