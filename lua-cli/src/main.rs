@@ -25,21 +25,15 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .subcommand(Command::new("run").allow_external_subcommands(true))
         .get_matches();
 
-    // let lua = lua_core::create_vm()?;
-
-    // lua_core::util::search_path::append(&lua, "./lua-core/examples/?.lua")?;
-
-    // lua_core::register_module(&lua)?;
-    // lua_config::register_module(&lua)?;
-    // lua_env::register_module(&lua)?;
-
-    // let script = tokio::fs::read(&args.path).await?;
-
-    // lua.load(&script).eval_async().await?;
-
     match args.subcommand() {
         Some(("run", args)) => {
-            let (cmd, args) = args.subcommand().expect("subcommand");
+            let (cmd, args) = match args.subcommand() {
+                Some(ret) => ret,
+                None => {
+                    eprintln!("usage: {} run <path> [args]", "blur");
+                    return Ok(());
+                }
+            };
             let args = args
                 .get_many::<OsString>("")
                 .unwrap()
@@ -48,9 +42,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
             run_command(cmd, args).await?;
         }
-        _ => {
-            panic!("")
-        }
+        _ => {}
     };
 
     Ok(())
@@ -71,9 +63,15 @@ pub async fn run_command(path: &str, args: Vec<String>) -> Result<(), Box<dyn st
     lua_config::register_module(&lua)?;
     lua_env::register_module(&lua)?;
 
-    let script = tokio::fs::read(&path).await?;
+    let mut script = &*tokio::fs::read(&path).await?;
 
-    lua.load(&script).set_name(path).eval_async().await?;
+    if script.len() >= 2 && script[0] as char == '#' && script[1] as char == '!' {
+        if let Some(pos) = script.iter().position(|&x| x as char == '\n') {
+            script = &script[pos..];
+        }
+    }
+
+    lua.load(script).set_name(path).eval_async().await?;
 
     Ok(())
 }

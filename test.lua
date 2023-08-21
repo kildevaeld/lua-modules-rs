@@ -1,3 +1,5 @@
+#!/usr/bin/env blur run
+
 local config = require 'core.config'
 local util = require 'core.util'
 local crypto = require 'core.crypto'

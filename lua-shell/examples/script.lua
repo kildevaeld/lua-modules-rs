@@ -1,7 +1,7 @@
 local shell = require "core.shell"
 
 
-print("CWD " .. shell.pwd)
+print("CWD " .. shell.cwd .. " Args" .. shell.args)
 
 print(shell.cat("Cargo.toml"))
 
