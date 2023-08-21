@@ -57,13 +57,15 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 
 pub async fn run_command(path: &str, args: Vec<String>) -> Result<(), Box<dyn std::error::Error>> {
-    //println!("ARGS: {:?}", args);
-
     let lua = lua_core::create_vm()?;
 
-    lua_env::settings::get_mut(&lua)?.args = args;
+    let mut lua_args = vec![path.to_string()];
 
-    lua_core::util::search_path::append(&lua, "./lua-core/examples/?.lua")?;
+    lua_args.extend(args);
+
+    lua_env::settings::get_mut(&lua)?.args = lua_args;
+
+    lua_core::util::search_path::append(&lua, "./?.lua")?;
 
     lua_core::register_module(&lua)?;
     lua_config::register_module(&lua)?;

@@ -1,28 +1,15 @@
-use std::path::PathBuf;
-
 use lua_fs::module::DirEntry;
 use lua_util::stream::DynamicStreamExt;
 
 use crate::exec::Exec;
 
-pub struct ShellSettings {}
-
-#[derive(Debug, Clone)]
-pub struct Shell {
-    work_dir: PathBuf,
-}
-
-impl Shell {
-    pub fn new(vm: &mlua::Lua, work_dir: PathBuf) -> Shell {
-        vm.set_app_data(ShellSettings {});
-
-        Shell { work_dir }
-    }
-}
+pub struct Shell;
 
 impl mlua::UserData for Shell {
     fn add_fields<'lua, F: mlua::UserDataFields<'lua, Self>>(fields: &mut F) {
-        fields.add_field_method_get("pwd", |_, this| Ok(this.work_dir.display().to_string()))
+        fields.add_field_function_get("cwd", |vm, _this| lua_env::module::work_dir(vm));
+        fields.add_field_function_get("env", |vm, _| lua_env::module::env(vm));
+        fields.add_field_function_get("env", |vm, _| lua_env::module::argv(vm));
     }
 
     fn add_methods<'lua, M: mlua::UserDataMethods<'lua, Self>>(methods: &mut M) {

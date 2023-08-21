@@ -2,7 +2,7 @@ use lua_util::definition;
 use mlua::IntoLua;
 
 pub mod env;
-mod module;
+pub mod module;
 pub mod settings;
 
 definition!(CORE_ENV("core.env") = "../definitions/core.env.lua");

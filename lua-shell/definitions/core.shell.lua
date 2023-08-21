@@ -1,9 +1,11 @@
 --- @meta core.shell
 
+--- @class Shell
+--- @field cwd string
+--- @field env Environ
+--- @field args string[]
 local Shell = {}
 
---- @type string
-Shell.pwd = "";
 
 --- @class Exec
 --- @field status async fun(this: Exec): integer

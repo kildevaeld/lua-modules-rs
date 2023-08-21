@@ -10,7 +10,7 @@ mlua = { version = "0.9" }
 tokio = { version = "1", features = ["process"] }
 lua-util = { path = "../lua-util" }
 lua-fs = { path = "../lua-fs" }
-
+lua-env = { path = "../lua-env" }
 
 [dev-dependencies]
 mlua = { version = "0.9", features = ["async", "lua54"] }
