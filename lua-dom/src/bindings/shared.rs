@@ -1,4 +1,4 @@
-use mlua::{MetaMethod, UserData};
+use mlua::{IntoLuaMulti, MetaMethod, UserData, UserDataRef};
 
 #[derive(Clone, Debug)]
 pub struct StringRef<S>(pub S);
@@ -57,15 +57,16 @@ impl<S: std::fmt::Display + AsRef<str> + Clone + 'static> UserData for StringLis
             feature = "luajit52"
         ))]
         methods.add_meta_method(MetaMethod::Pairs, |lua, data, ()| {
-            let stateless_iter = lua.create_function(|lua, (data, i): (StringList<S>, i64)| {
-                let i = i + 1;
-                if (i as usize) <= data.0.len() {
-                    let node_id = &data.0[(i - 1) as usize];
+            let stateless_iter =
+                lua.create_function(|lua, (data, i): (UserDataRef<StringList<S>>, i64)| {
+                    let i = i + 1;
+                    if (i as usize) <= data.0.len() {
+                        let node_id = &data.0[(i - 1) as usize];
 
-                    return Ok((i, node_id.clone()).to_lua_multi(lua)?);
-                }
-                return Ok(Value::Nil.to_lua_multi(lua)?);
-            })?;
+                        return Ok((i, node_id.clone()).into_lua_multi(lua)?);
+                    }
+                    return Ok(mlua::Value::Nil.into_lua_multi(lua)?);
+                })?;
             Ok((stateless_iter, data.clone(), 0))
         });
 

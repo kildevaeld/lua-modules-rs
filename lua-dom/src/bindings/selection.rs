@@ -1,6 +1,6 @@
 use crate::element_ref::ElementRef;
 use crate::Selection;
-use mlua::{MetaMethod, UserData};
+use mlua::{IntoLuaMulti, MetaMethod, UserData, UserDataRef};
 
 use super::element::Element;
 use super::shared::{StringList, StringRef};
@@ -18,43 +18,45 @@ impl UserData for Selection {
             feature = "luajit52"
         ))]
         methods.add_meta_method(MetaMethod::Pairs, |lua, data, ()| {
-            let stateless_iter = lua.create_function(|lua, (data, i): (Selection, i64)| {
-                let i = i + 1;
-                if (i as usize) <= data.nodes.len() {
-                    let node_id = data.nodes[(i - 1) as usize];
+            let stateless_iter =
+                lua.create_function(|lua, (data, i): (UserDataRef<Selection>, i64)| {
+                    let i = i + 1;
+                    if (i as usize) <= data.nodes.len() {
+                        let node_id = data.nodes[(i - 1) as usize];
 
-                    return Ok((
-                        i,
-                        Element {
-                            tree: data.tree.clone(),
-                            node_id,
-                        },
-                    )
-                        .to_lua_multi(lua)?);
-                }
-                return Ok(Value::Nil.to_lua_multi(lua)?);
-            })?;
+                        return Ok((
+                            i,
+                            Element {
+                                tree: data.tree.clone(),
+                                node_id,
+                            },
+                        )
+                            .into_lua_multi(lua)?);
+                    }
+                    return Ok(mlua::Value::Nil.into_lua_multi(lua)?);
+                })?;
             Ok((stateless_iter, data.clone(), 0))
         });
 
         #[cfg(any(feature = "lua52", feature = "luajit52"))]
         methods.add_meta_method(MetaMethod::IPairs, |lua, data, ()| {
-            let stateless_iter = lua.create_function(|lua, (data, i): (Selection, i64)| {
-                let i = i + 1;
-                if (i as usize) <= data.nodes.len() {
-                    let node_id = data.nodes[(i - 1) as usize];
+            let stateless_iter =
+                lua.create_function(|lua, (data, i): (UserDataRef<Selection>, i64)| {
+                    let i = i + 1;
+                    if (i as usize) <= data.nodes.len() {
+                        let node_id = data.nodes[(i - 1) as usize];
 
-                    return Ok((
-                        i,
-                        Element {
-                            tree: data.tree.clone(),
-                            node_id,
-                        },
-                    )
-                        .to_lua_multi(lua)?);
-                }
-                return Ok(Value::Nil.to_lua_multi(lua)?);
-            })?;
+                        return Ok((
+                            i,
+                            Element {
+                                tree: data.tree.clone(),
+                                node_id,
+                            },
+                        )
+                            .into_lua_multi(lua)?);
+                    }
+                    return Ok(mlua::Value::Nil.into_lua_multi(lua)?);
+                })?;
             Ok((stateless_iter, data.clone(), 0))
         });
 
