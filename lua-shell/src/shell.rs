@@ -9,7 +9,7 @@ impl mlua::UserData for Shell {
     fn add_fields<'lua, F: mlua::UserDataFields<'lua, Self>>(fields: &mut F) {
         fields.add_field_function_get("cwd", |vm, _this| lua_env::module::work_dir(vm));
         fields.add_field_function_get("env", |vm, _| lua_env::module::env(vm));
-        fields.add_field_function_get("env", |vm, _| lua_env::module::argv(vm));
+        fields.add_field_function_get("args", |vm, _| lua_env::module::argv(vm));
     }
 
     fn add_methods<'lua, M: mlua::UserDataMethods<'lua, Self>>(methods: &mut M) {
