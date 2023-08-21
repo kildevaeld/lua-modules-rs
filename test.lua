@@ -1,4 +1,4 @@
-#!/usr/bin/env blur run
+#!/usr/bin/env -S blur run
 
 local config = require 'core.config'
 local util = require 'core.util'
