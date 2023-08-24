@@ -19,7 +19,7 @@ tokio-stream = { version = "0.1", features = ["io-util", "fs"] }
 
 pin-project-lite = { version = "0.2" }
 
-lua-util = { path = "../lua-util" }
+lua-util = { path = "../lua-util", features = ["types"] }
 
 [dev-dependencies]
 mlua = { version = "0.9", features = ["async", "lua54"] }

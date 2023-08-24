@@ -1,21 +1,30 @@
 #[macro_use]
 mod macros;
 
+#[cfg(feature = "types")]
 pub mod buffer;
+#[cfg(feature = "types")]
 pub mod iter;
+#[cfg(feature = "types")]
 pub mod stream;
 pub mod types;
+#[cfg(feature = "types")]
 pub mod value;
 
+#[cfg(feature = "types")]
 definition!(
     CORE_STREAM("core.stream") = "../definitions/core.stream.lua"
     CORE_UTIL("core.util") = "../definitions/core.util.lua"
 );
 
+#[cfg(feature = "types")]
 const CLASS: &[u8] = include_bytes!("class.lua");
+#[cfg(feature = "types")]
 const STREAM: &[u8] = include_bytes!("stream.lua");
+#[cfg(feature = "types")]
 const UTIL: &[u8] = include_bytes!("util.lua");
 
+#[cfg(feature = "types")]
 pub fn register_modules(vm: &mlua::Lua) -> Result<(), mlua::Error> {
     module::register(vm, "core.util", |vm| vm.load(UTIL).eval::<mlua::Value>())?;
     module::register(vm, "core.class", |vm| vm.load(CLASS).eval::<mlua::Value>())?;

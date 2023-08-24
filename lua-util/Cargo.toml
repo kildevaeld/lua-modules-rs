@@ -5,14 +5,25 @@ edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[features]
+default = []
+types = [
+    "bytes",
+    "data-encoding",
+    "async-trait",
+    "futures-lite",
+    "locket",
+    "mlua/async",
+]
+
 [dependencies]
 mlua = { version = "0.9", features = [] }
-async-trait = { version = "0.1" }
-futures-lite = { version = "1" }
+async-trait = { version = "0.1", optional = true }
+futures-lite = { version = "1", optional = true }
 locket = { git = "https://github.com/kildevaeld/locket-rs", features = [
     "async",
     "std",
-] }
+], optional = true }
 
-bytes = { version = "1" }
-data-encoding = { version = "2" }
+bytes = { version = "1", optional = true }
+data-encoding = { version = "2", optional = true }
