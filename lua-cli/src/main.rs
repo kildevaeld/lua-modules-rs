@@ -1,6 +1,9 @@
-use std::ffi::OsString;
+use std::{
+    ffi::OsString,
+    path::{Path, PathBuf},
+};
 
-use clap::{Command, Parser, Subcommand};
+use clap::{Arg, Command, Parser, Subcommand};
 
 // #[derive(Parser)]
 // #[command(author, version, about, long_about = None)]
@@ -23,6 +26,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let args = clap::Command::new("blur")
         .subcommand(Command::new("run").allow_external_subcommands(true))
+        .subcommand(Command::new("types").arg(Arg::new("path").required(true)))
         .get_matches();
 
     match args.subcommand() {
@@ -42,13 +46,17 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
             run_command(cmd, args).await?;
         }
+        Some(("types", args)) => {
+            let path = args.get_one::<String>("path").expect("should not be empty");
+            types_command(path).await?;
+        }
         _ => {}
     };
 
     Ok(())
 }
 
-pub async fn run_command(path: &str, args: Vec<String>) -> Result<(), Box<dyn std::error::Error>> {
+async fn run_command(path: &str, args: Vec<String>) -> Result<(), Box<dyn std::error::Error>> {
     let lua = lua_core::create_vm()?;
 
     let mut lua_args = vec![path.to_string()];
@@ -72,6 +80,23 @@ pub async fn run_command(path: &str, args: Vec<String>) -> Result<(), Box<dyn st
     }
 
     lua.load(script).set_name(path).eval_async().await?;
+
+    Ok(())
+}
+
+async fn types_command<P: Into<PathBuf>>(path: P) -> Result<(), Box<dyn std::error::Error>> {
+    let path = path.into();
+
+    if !path.is_dir() {
+        tokio::fs::create_dir_all(&path).await?;
+    }
+
+    tokio::task::spawn_blocking(move || {
+        lua_core::write_definitions(&path)?;
+        lua_config::write_definition(&path)?;
+        lua_env::write_definition(&path)
+    })
+    .await??;
 
     Ok(())
 }

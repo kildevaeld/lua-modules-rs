@@ -52,4 +52,7 @@ function Shell.mkdir(path) end
 --- @return boolean
 function Shell.test(path, type) end
 
+--- @param code integer
+function Shell.exit(code) end
+
 return Shell

@@ -1,4 +1,7 @@
-local shell = require 'shell'
+local shell = require 'core.shell'
 
 
-shell.ls("./"):pipe(shell.exec("rofi -dmenu"))
+local status = shell.exec("ls ./"):pipe(shell.exec("rofi -dmenu")):status()
+
+
+print("status " .. status)

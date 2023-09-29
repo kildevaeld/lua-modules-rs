@@ -1102,6 +1102,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "lua-regexp"
+version = "0.1.0"
+dependencies = [
+ "lua-util",
+ "mlua",
+ "regex",
+]
+
+[[package]]
 name = "lua-shell"
 version = "0.1.0"
 dependencies = [

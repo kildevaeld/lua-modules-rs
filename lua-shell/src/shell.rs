@@ -75,5 +75,11 @@ impl mlua::UserData for Shell {
                 vec!["-c".to_string(), args.to_str()?.to_string()],
             ))
         });
+
+        #[allow(unreachable_code)]
+        methods.add_function("exit", |_, code: i32| {
+            std::process::exit(code);
+            Ok(())
+        });
     }
 }
