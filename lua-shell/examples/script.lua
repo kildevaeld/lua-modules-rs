@@ -1,9 +1,9 @@
 local shell = require "core.shell"
 
 
-print("CWD " .. shell.cwd .. " Args" .. shell.args)
+-- print("CWD " .. shell.cwd .. " Args" .. shell.args)
 
-print(shell.cat("Cargo.toml"))
+print(shell.cat("Cargo.toml"):toString("base64"))
 
 
 local output = shell.sh("cd lua-fs; ls"):output()
@@ -21,6 +21,6 @@ local output = shell.sh("cd lua-fs; ls"):output()
 -- print(shell.cat("Cargo.toml"))
 
 
--- local output = shell.exec("ls -l"):pipe(shell.exec("rofi -dmenu")):output()
+local output = shell.exec("ls -l"):pipe(shell.exec("rofi -dmenu")):output()
 
--- print("" .. output)
+print("" .. output)

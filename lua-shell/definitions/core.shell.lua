@@ -1,5 +1,7 @@
 --- @meta core.shell
 
+require 'core.fs'
+
 --- @class Shell
 --- @field cwd string
 --- @field env Environ
@@ -35,7 +37,7 @@ function Shell.ls(path) end
 
 --- Read path
 --- @param path string
---- @return string
+--- @return Buffer
 function Shell.cat(path) end
 
 --- Write path

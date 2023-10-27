@@ -2,7 +2,7 @@ mod regexp;
 
 use lua_util::definition;
 use mlua::IntoLua;
-use regexp::LuaRegex;
+pub use regexp::LuaRegex;
 
 definition!(CORE_JSON("blur.regexp") = "../definitions/blur.regex.lua");
 

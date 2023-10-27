@@ -11,6 +11,14 @@ local Regexp = {}
 function Regexp:is_match(haystack) end
 
 --- @param haystack string
+--- @return Match | nil
+function Regexp:find_first(haystack) end
+
+--- @param haystack string
+--- @return Match[] | nil
+function Regexp:find(haystack) end
+
+--- @param haystack string
 --- @return Captures | nil
 function Regexp:captures(haystack) end
 

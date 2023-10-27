@@ -42,6 +42,21 @@ if capture == nil then
 end
 
 print("capture " .. tostring(capture:get(1)))
+
+
+local all = reg:find("test is a number: 200. This is also a number: 4023")
+
+
+if all == nil then
+    print("Could not find a number")
+    return
+end
+
+
+for _, n in ipairs(all) do
+    print("Match " .. tostring(n))
+end
+
 -- local len = #capture
 
 -- print("Captures " .. tostring(#capture))

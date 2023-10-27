@@ -13,6 +13,34 @@ impl mlua::UserData for LuaRegex {
 
         methods.add_method("captures", |_vm, this, haystack: String| {
             Ok(Captures::new(&this.0, haystack))
+        });
+
+        methods.add_method("find_first", |_vm, this, haystack: mlua::String| {
+            let found = this.0.find(haystack.to_str()?).map(|m| Match {
+                start: m.start(),
+                end: m.end(),
+                string: m.as_str().to_string(),
+            });
+
+            Ok(found)
+        });
+
+        methods.add_method("find", |_vm, this, haystack: mlua::String| {
+            let found = this
+                .0
+                .find_iter(haystack.to_str()?)
+                .map(|m| Match {
+                    start: m.start(),
+                    end: m.end(),
+                    string: m.as_str().to_string(),
+                })
+                .collect::<Vec<_>>();
+
+            if found.is_empty() {
+                Ok(None)
+            } else {
+                Ok(Some(found))
+            }
         })
     }
 }
@@ -57,12 +85,9 @@ impl Captures {
 }
 
 impl mlua::UserData for Captures {
-    fn add_fields<'lua, F: mlua::UserDataFields<'lua, Self>>(fields: &mut F) {}
-
     fn add_methods<'lua, M: mlua::UserDataMethods<'lua, Self>>(methods: &mut M) {
         methods.add_method("get", |vm, this, item: u32| {
             let idx = (item.max(1) - 1) as usize;
-            println!("IDX {idx}");
             let capture = this.0.captures.as_ref().and_then(|m| {
                 m.get(idx).and_then(|mat| {
                     Some(Match {
