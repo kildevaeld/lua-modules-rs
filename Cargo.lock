@@ -998,6 +998,7 @@ dependencies = [
  "lua-fs",
  "lua-http",
  "lua-json",
+ "lua-regexp",
  "lua-shell",
  "lua-util",
  "mlua",

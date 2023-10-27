@@ -22,6 +22,7 @@
       "lua-cli",
       "lua-crypto",
       "lua-hbs",
+      "lua-regexp",
       "lua-env"
     ]
   }

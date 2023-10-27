@@ -7,6 +7,8 @@ pub fn write_definitions(path: &std::path::Path) -> std::io::Result<()> {
     lua_shell::write_definition(path)?;
     #[cfg(feature = "crypto")]
     lua_crypto::write_definition(path)?;
+    #[cfg(feature = "regex")]
+    lua_regexp::write_definition(path)?;
     Ok(())
 }
 
@@ -21,6 +23,8 @@ pub fn register_module(vm: &mlua::Lua) -> mlua::Result<()> {
     lua_shell::register_module(vm)?;
     #[cfg(feature = "crypto")]
     lua_crypto::register_module(vm)?;
+    #[cfg(feature = "regex")]
+    lua_regexp::register_module(vm)?;
 
     Ok(())
 }

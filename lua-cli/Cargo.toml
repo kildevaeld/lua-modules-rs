@@ -16,7 +16,12 @@ name = "blur"
 [dependencies]
 mlua = { version = "0.9", features = ["async", "lua54", "vendored"] }
 tokio = { version = "1", features = ["fs", "macros"] }
-lua-core = { path = "../lua-core", features = ["http", "shell", "crypto"] }
+lua-core = { path = "../lua-core", features = [
+    "http",
+    "shell",
+    "crypto",
+    "regex",
+] }
 lua-config = { path = "../lua-config", features = ["toml", "yaml", "ron"] }
 lua-env = { path = "../lua-env" }
 
