@@ -34,7 +34,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                         .value_parser(clap::value_parser!(PathBuf))
                         .help("where to look for modules"),
                 )
-                .arg(Arg::new("verbose").action(clap::ArgAction::SetTrue))
                 .allow_external_subcommands(true),
         )
         .subcommand(Command::new("types").arg(Arg::new("path").required(true)))
@@ -61,7 +60,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 .map(|m| m.to_string_lossy().to_string())
                 .collect::<Vec<_>>();
 
-            run_command(cmd, lua_args, search_paths, args.get_flag("verbose")).await?;
+            run_command(cmd, lua_args, search_paths).await?;
         }
         Some(("types", args)) => {
             let path = args.get_one::<String>("path").expect("should not be empty");
@@ -77,7 +76,6 @@ async fn run_command(
     path: &str,
     args: Vec<String>,
     search_paths: impl Iterator<Item = &Path>,
-    verbose: bool,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let lua = lua_core::create_vm()?;
 
@@ -93,13 +91,6 @@ async fn run_command(
         let sp = sp.join("?.lua");
         let string = sp.display();
         lua_core::util::search_path::append(&lua, &string.to_string())?;
-    }
-
-    if verbose {
-        println!("Search paths:");
-        for sp in lua_core::util::search_path::list(&lua)? {
-            println!("  {}", sp);
-        }
     }
 
     lua_core::register_module(&lua)?;

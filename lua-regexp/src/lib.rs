@@ -21,7 +21,7 @@ pub fn init(vm: &mlua::Lua, module: &mlua::Table<'_>) -> Result<(), mlua::Error>
 }
 
 pub fn register_module(vm: &mlua::Lua) -> mlua::Result<()> {
-    lua_util::module::register(vm, "blur.regexp", |vm| {
+    lua_util::module::register(vm, "core.regexp", |vm| {
         let table = vm.create_table()?;
 
         init(vm, &table)?;
