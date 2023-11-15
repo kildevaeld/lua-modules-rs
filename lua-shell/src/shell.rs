@@ -38,8 +38,8 @@ impl mlua::UserData for Shell {
             "test",
             |_vm, (path, ftype): (mlua::String, Option<mlua::String>)| async move {
                 let Ok(meta) = tokio::fs::metadata(path.to_str()?).await else {
-                return Ok(false)
-            };
+                    return Ok(false);
+                };
 
                 let ret = if let Some(filetype) = ftype {
                     match filetype.to_str()? {
@@ -64,6 +64,28 @@ impl mlua::UserData for Shell {
 
             Ok(())
         });
+
+        methods.add_async_function(
+            "mv",
+            |_vm, (from, to): (mlua::String, mlua::String)| async move {
+                tokio::fs::rename(from.to_str()?, to.to_str()?)
+                    .await
+                    .map_err(mlua::Error::external)?;
+
+                Ok(())
+            },
+        );
+
+        methods.add_async_function(
+            "cp",
+            |_vm, (from, to): (mlua::String, mlua::String)| async move {
+                tokio::fs::copy(from.to_str()?, to.to_str()?)
+                    .await
+                    .map_err(mlua::Error::external)?;
+
+                Ok(())
+            },
+        );
 
         methods.add_function("exec", |_ctx, args: mlua::String| {
             Ok(Exec::from(args.to_str()?))

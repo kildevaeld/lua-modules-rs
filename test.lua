@@ -6,7 +6,7 @@ local crypto = require 'core.crypto'
 local json = require 'core.json'
 local env = require 'core.env'
 local date = require 'core.time'
-local regxp = require 'blur.regexp'
+local regxp = require 'core.regexp'
 
 
 local toml = config.read("Cargo.toml")

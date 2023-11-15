@@ -4,7 +4,7 @@ use lua_util::definition;
 use mlua::IntoLua;
 pub use regexp::LuaRegex;
 
-definition!(CORE_JSON("blur.regexp") = "../definitions/blur.regex.lua");
+definition!(CORE_JSON("core.regexp") = "../definitions/blur.regex.lua");
 
 pub fn init(vm: &mlua::Lua, module: &mlua::Table<'_>) -> Result<(), mlua::Error> {
     let func = vm.create_function(|_vm, args: String| {

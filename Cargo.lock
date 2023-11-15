@@ -996,6 +996,7 @@ dependencies = [
  "lua-crypto",
  "lua-date",
  "lua-fs",
+ "lua-hbs",
  "lua-http",
  "lua-json",
  "lua-regexp",

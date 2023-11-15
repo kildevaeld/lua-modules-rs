@@ -21,6 +21,7 @@ lua-core = { path = "../lua-core", features = [
     "shell",
     "crypto",
     "regex",
+    "hbs",
 ] }
 lua-config = { path = "../lua-config", features = ["toml", "yaml", "ron"] }
 lua-env = { path = "../lua-env" }

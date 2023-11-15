@@ -49,6 +49,14 @@ function Shell.write(path, content) end
 --- @param path string
 function Shell.mkdir(path) end
 
+--- @param from string
+--- @param to string
+function Shell.mv(from, to) end
+
+--- @param from string
+--- @param to string
+function Shell.cp(from, to) end
+
 --- @param path string
 --- @param type? FileType
 --- @return boolean

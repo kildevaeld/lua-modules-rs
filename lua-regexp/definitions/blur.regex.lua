@@ -1,4 +1,4 @@
---- @meta blur.regexp
+--- @meta core.regexp
 
 
 local Module = {}

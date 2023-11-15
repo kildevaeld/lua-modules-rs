@@ -12,6 +12,7 @@ shell = ["lua-shell"]
 crypto = ["lua-crypto"]
 vendored = ["lua-http?/vendored"]
 regex = ["lua-regexp"]
+hbs = ["lua-hbs"]
 
 [dependencies]
 lua-fs = { path = "../lua-fs" }
@@ -22,6 +23,7 @@ lua-date = { path = "../lua-date" }
 lua-shell = { path = "../lua-shell", optional = true }
 lua-crypto = { path = "../lua-crypto", optional = true }
 lua-regexp = { path = "../lua-regexp", optional = true }
+lua-hbs = { path = "../lua-hbs", optional = true }
 mlua = { version = "0.9" }
 
 
