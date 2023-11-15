@@ -25,7 +25,18 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     //let args = Cli::parse();
 
     let args = clap::Command::new("blur")
-        .subcommand(Command::new("run").allow_external_subcommands(true))
+        .subcommand(
+            Command::new("run")
+                .arg(
+                    Arg::new("search-paths")
+                        .short('s')
+                        .action(clap::ArgAction::Append)
+                        .value_parser(clap::value_parser!(PathBuf))
+                        .help("where to look for modules"),
+                )
+                .arg(Arg::new("verbose").action(clap::ArgAction::SetTrue))
+                .allow_external_subcommands(true),
+        )
         .subcommand(Command::new("types").arg(Arg::new("path").required(true)))
         .get_matches();
 
@@ -38,13 +49,19 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                     return Ok(());
                 }
             };
-            let args = args
+
+            let search_paths = args
+                .get_many::<PathBuf>("search-paths")
+                .into_iter()
+                .flat_map(|m| m.map(|m| &**m));
+
+            let lua_args = args
                 .get_many::<OsString>("")
                 .unwrap()
                 .map(|m| m.to_string_lossy().to_string())
                 .collect::<Vec<_>>();
 
-            run_command(cmd, args).await?;
+            run_command(cmd, lua_args, search_paths, args.get_flag("verbose")).await?;
         }
         Some(("types", args)) => {
             let path = args.get_one::<String>("path").expect("should not be empty");
@@ -56,7 +73,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
-async fn run_command(path: &str, args: Vec<String>) -> Result<(), Box<dyn std::error::Error>> {
+async fn run_command(
+    path: &str,
+    args: Vec<String>,
+    search_paths: impl Iterator<Item = &Path>,
+    verbose: bool,
+) -> Result<(), Box<dyn std::error::Error>> {
     let lua = lua_core::create_vm()?;
 
     let mut lua_args = vec![path.to_string()];
@@ -66,6 +88,19 @@ async fn run_command(path: &str, args: Vec<String>) -> Result<(), Box<dyn std::e
     lua_env::settings::get_mut(&lua)?.args = lua_args;
 
     lua_core::util::search_path::append(&lua, "./?.lua")?;
+
+    for sp in search_paths {
+        let sp = sp.join("?.lua");
+        let string = sp.display();
+        lua_core::util::search_path::append(&lua, &string.to_string())?;
+    }
+
+    if verbose {
+        println!("Search paths:");
+        for sp in lua_core::util::search_path::list(&lua)? {
+            println!("  {}", sp);
+        }
+    }
 
     lua_core::register_module(&lua)?;
     lua_config::register_module(&lua)?;

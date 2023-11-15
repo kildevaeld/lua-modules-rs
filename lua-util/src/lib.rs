@@ -51,6 +51,16 @@ pub mod search_path {
         Ok(())
     }
 
+    pub fn list(vm: &mlua::Lua) -> Result<Vec<String>, mlua::Error> {
+        let package = vm.globals().get::<_, mlua::Table>("package")?;
+
+        let path = package.get::<_, String>("path")?;
+
+        let split = path.split(';').map(|m| m.to_string()).collect::<Vec<_>>();
+
+        Ok(split)
+    }
+
     pub fn set(vm: &mlua::Lua, search_path: &str) -> Result<(), mlua::Error> {
         let package = vm.globals().get::<_, mlua::Table>("package")?;
 
