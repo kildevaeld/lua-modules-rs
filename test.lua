@@ -7,7 +7,15 @@ local json = require 'core.json'
 local env = require 'core.env'
 local date = require 'core.time'
 local regxp = require 'core.regexp'
+local hbs = require 'core.hbs'
 
+
+hbs = hbs.create()
+
+
+local out = hbs:render("{{name}}", { name = "Rasmus" })
+
+print("HBS: " .. out)
 
 local toml = config.read("Cargo.toml")
 
