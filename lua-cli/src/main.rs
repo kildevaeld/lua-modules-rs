@@ -88,7 +88,6 @@ async fn run_command(
     lua_core::util::search_path::append(&lua, "./?.lua")?;
 
     for sp in search_paths {
-        println!("PATH: {}", sp.display());
         let sp = sp.join("?.lua");
         let string = sp.display();
         lua_core::util::search_path::append(&lua, &string.to_string())?;
@@ -106,7 +105,9 @@ async fn run_command(
         }
     }
 
-    lua.load(script).set_name(path).eval_async().await?;
+    if let Err(err) = lua.load(script).set_name(path).eval_async::<()>().await {
+        eprintln!("{err}");
+    }
 
     Ok(())
 }

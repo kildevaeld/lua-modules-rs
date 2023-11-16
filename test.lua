@@ -13,7 +13,8 @@ local hbs = require 'core.hbs'
 hbs = hbs.create()
 
 
-local out = hbs:render("{{name}}", { name = "Rasmus" })
+
+local out = hbs:render("{{@name}}{{#each}}", { name = "Rasmus" })
 
 print("HBS: " .. out)
 
