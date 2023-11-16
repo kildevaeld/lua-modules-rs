@@ -41,6 +41,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     match args.subcommand() {
         Some(("run", args)) => {
+            let search_paths = args
+                .get_many::<PathBuf>("search-paths")
+                .into_iter()
+                .flat_map(|m| m.map(|m| &**m));
+
             let (cmd, args) = match args.subcommand() {
                 Some(ret) => ret,
                 None => {
@@ -48,11 +53,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                     return Ok(());
                 }
             };
-
-            let search_paths = args
-                .get_many::<PathBuf>("search-paths")
-                .into_iter()
-                .flat_map(|m| m.map(|m| &**m));
 
             let lua_args = args
                 .get_many::<OsString>("")
@@ -88,6 +88,7 @@ async fn run_command(
     lua_core::util::search_path::append(&lua, "./?.lua")?;
 
     for sp in search_paths {
+        println!("PATH: {}", sp.display());
         let sp = sp.join("?.lua");
         let string = sp.display();
         lua_core::util::search_path::append(&lua, &string.to_string())?;
