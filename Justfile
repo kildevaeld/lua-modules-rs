@@ -4,8 +4,8 @@ default:
     just -l
 
 install:
-    cargo install --path lua-cli
+    cargo install --path blua-cli
 
 
 cross-build:
-    cross build -p lua-cli --target x86_64-unknown-linux-musl --features vendored  --release
+    cross build -p blua-cli --target x86_64-unknown-linux-musl  --release

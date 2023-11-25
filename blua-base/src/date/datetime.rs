@@ -1,7 +1,5 @@
-
-
 use chrono::{DateTime, Datelike, FixedOffset, Local, Timelike, Utc};
-use mlua::{MetaMethod};
+use mlua::MetaMethod;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum LuaDateTime {
@@ -95,18 +93,18 @@ impl LuaDateTime {
         do_match!(self, |e| e.ordinal0())
     }
 
-    fn weekday(&self) -> chrono::Weekday {
-        do_match!(self, |e| e.weekday())
-    }
+    // fn weekday(&self) -> chrono::Weekday {
+    //     do_match!(self, |e| e.weekday())
+    // }
 
-    fn iso_week(&self) -> chrono::IsoWeek {
-        do_match!(self, |e| e.iso_week())
-    }
+    // fn iso_week(&self) -> chrono::IsoWeek {
+    //     do_match!(self, |e| e.iso_week())
+    // }
 }
 
 impl mlua::UserData for LuaDateTime {
     fn add_fields<'lua, F: mlua::UserDataFields<'lua, Self>>(fields: &mut F) {
-        do_prop!(fields, hour minute second nanosecond year month month0 day day0 ordinal ordinal0);
+        do_prop!(fields,  hour minute second nanosecond year month month0 day day0 ordinal ordinal0);
     }
 
     fn add_methods<'lua, M: mlua::UserDataMethods<'lua, Self>>(methods: &mut M) {

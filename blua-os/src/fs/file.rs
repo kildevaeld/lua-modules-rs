@@ -1,5 +1,5 @@
 use blua_shared::{bytes::LuaBuffer, new_lock, stream::LuaStream, Locket, Lrc};
-use futures_lite::{ready, Stream, StreamExt};
+use futures_lite::{ready, Stream};
 use locket::AsyncLockApi;
 
 use std::{os::unix::prelude::FileTypeExt, path::PathBuf, task::Poll};

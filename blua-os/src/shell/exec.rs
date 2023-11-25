@@ -1,7 +1,5 @@
-use std::{ops::Deref, process::Stdio};
-
-use blua_shared::stream::DynamicStreamExt;
 use mlua::UserDataRef;
+use std::{ops::Deref, process::Stdio};
 
 #[derive(Debug, Clone)]
 pub struct Exec {

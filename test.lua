@@ -1,20 +1,20 @@
 #!/usr/bin/env -S blur run
 
-local config = require 'core.config'
-local util = require 'core.util'
-local crypto = require 'core.crypto'
-local json = require 'core.json'
-local env = require 'core.env'
-local date = require 'core.time'
-local regxp = require 'core.regexp'
-local hbs = require 'core.hbs'
+local config = require 'blua.config'
+local util = require 'blua.util'
+local crypto = require 'blua.crypto'
+local json = require 'blua.json'
+local env = require 'blua.env'
+local date = require 'blua.time'
+local regxp = require 'blua.regexp'
+local hbs = require 'blua.hbs'
 
 
 hbs = hbs.create()
 
 
 
-local out = hbs:render("{{@name}}{{#each}}", { name = "Rasmus" })
+local out = hbs:render("{{name}}", { name = "Rasmus" })
 
 print("HBS: " .. out)
 

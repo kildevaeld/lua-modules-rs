@@ -1,0 +1,18 @@
+[package]
+name = "blua-image"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[features]
+default = ["webp"]
+webp = ["image/webp", "image/webp-encoder"]
+
+[dependencies]
+mlua = { version = "0.9", features = ["async"] }
+blua-shared = { path = "../blua-shared", features = ["bytes"] }
+image = { version = "0.24", default-features = false, features = [
+    "png",
+    "jpeg",
+] }
+tokio = { version = "1", features = ["fs"] }

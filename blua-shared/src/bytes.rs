@@ -15,6 +15,12 @@ impl From<Vec<u8>> for LuaBuffer {
     }
 }
 
+impl AsRef<[u8]> for LuaBuffer {
+    fn as_ref(&self) -> &[u8] {
+        &*self.0
+    }
+}
+
 impl mlua::UserData for LuaBuffer {
     fn add_fields<'lua, F: mlua::UserDataFields<'lua, Self>>(fields: &mut F) {
         fields.add_field_method_get("length", |_vm, this| Ok(this.0.len()))

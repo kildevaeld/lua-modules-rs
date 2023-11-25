@@ -16,7 +16,7 @@ blua-shared = { path = "../blua-shared" }
 blua-os = { path = "../blua-os" }
 blua-base = { path = "../blua-base" }
 blua-hbs = { path = "../blua-hbs" }
-blua-config = { path = "../blua-config" }
+blua-config = { path = "../blua-config", features = ["toml", "yaml", "ron"] }
 blua = { path = "../blua", features = ["os"] }
 
 tokio = { version = "1", features = ["fs", "macros", "rt"] }

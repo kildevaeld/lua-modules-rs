@@ -9,21 +9,14 @@
   },
   "workspace": {
     "members": [
-      "lua-dom",
-      "lua-pool",
-      "lua-shell",
-      "lua-fs",
-      "lua-json",
-      "lua-util",
-      "lua-core",
-      "lua-http",
-      "lua-date",
-      "lua-config",
-      "lua-cli",
-      "lua-crypto",
-      "lua-hbs",
-      "lua-regexp",
-      "lua-env"
-    ]
+      "blua-base",
+      "blua-shared",
+      "blua-os",
+      "blua-hbs",
+      "blua-config",
+      "blua",
+      "blua-cli"
+    ],
+    "resolver": "2"
   }
 }

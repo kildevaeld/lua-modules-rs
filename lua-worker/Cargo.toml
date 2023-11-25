@@ -1,0 +1,23 @@
+[package]
+name = "lua-worker"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[features]
+default = []
+async = ["async-trait", "futures-lite", "mlua/async"]
+tokio = ["dep:tokio", "async", "deadpool?/rt_tokio_1"]
+pool = ["deadpool"]
+
+[dependencies]
+mlua = { version = "0.9" }
+async-channel = { version = "2" }
+oneshot = { version = "0.1" }
+async-trait = { version = "0.1", optional = true }
+tokio = { version = "1", features = ["rt"], optional = true }
+futures-lite = { version = "2", optional = true }
+
+deadpool = { version = "0.10", optional = true }
+tracing = { version = "0.1" }
