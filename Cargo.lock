@@ -164,6 +164,44 @@ dependencies = [
 ]
 
 [[package]]
+name = "blua-base"
+version = "0.1.0"
+dependencies = [
+ "blua-shared",
+ "chrono",
+ "md5",
+ "mlua",
+ "regex",
+ "ring 0.17.5",
+ "serde_json",
+]
+
+[[package]]
+name = "blua-os"
+version = "0.1.0"
+dependencies = [
+ "blua-shared",
+ "futures-lite 2.0.1",
+ "locket",
+ "mlua",
+ "pin-project-lite",
+ "tokio",
+ "tokio-stream",
+]
+
+[[package]]
+name = "blua-shared"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "bytes",
+ "data-encoding",
+ "futures-lite 2.0.1",
+ "locket",
+ "mlua",
+]
+
+[[package]]
 name = "bstr"
 version = "1.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -575,6 +613,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "futures-lite"
+version = "2.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d3831c2651acb5177cbd83943f3d9c8912c5ad03c76afcc0e9511ba568ec5ebb"
+dependencies = [
+ "fastrand 2.0.0",
+ "futures-core",
+ "futures-io",
+ "memchr",
+ "parking",
+ "pin-project-lite",
+]
+
+[[package]]
 name = "futures-sink"
 version = "0.3.28"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -918,9 +970,9 @@ checksum = "e2abad23fbc42b3700f2f279844dc832adb2b2eb069b2df918f455c4e18cc646"
 
 [[package]]
 name = "libc"
-version = "0.2.147"
+version = "0.2.150"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b4668fb0ea861c1df094127ac5f1da3409a82116a4ba74fca2e58ef927159bb3"
+checksum = "89d92a4743f9a61002fae18374ed11e7973f530cb3a3255fb354818118b2203c"
 
 [[package]]
 name = "linux-raw-sys"
@@ -1013,7 +1065,7 @@ dependencies = [
  "lua-util",
  "md5",
  "mlua",
- "ring",
+ "ring 0.16.20",
 ]
 
 [[package]]
@@ -1052,7 +1104,7 @@ dependencies = [
 name = "lua-fs"
 version = "0.1.0"
 dependencies = [
- "futures-lite",
+ "futures-lite 1.13.0",
  "locket",
  "lua-util",
  "mlua",
@@ -1096,7 +1148,7 @@ dependencies = [
  "async-channel",
  "async-trait",
  "deadpool",
- "futures-lite",
+ "futures-lite 1.13.0",
  "mlua",
  "oneshot",
  "tokio",
@@ -1139,7 +1191,7 @@ dependencies = [
  "async-trait",
  "bytes",
  "data-encoding",
- "futures-lite",
+ "futures-lite 1.13.0",
  "locket",
  "mlua",
 ]
@@ -1421,9 +1473,9 @@ checksum = "b15813163c1d831bf4a13c3610c05c0d03b39feb07f7e09fa234dac9b15aaf39"
 
 [[package]]
 name = "parking"
-version = "2.1.0"
+version = "2.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "14f2252c834a40ed9bb5422029649578e63aa341ac401f74e719dd1afda8394e"
+checksum = "bb813b8af86854136c6922af0598d719255ecb2179515e6e7730d468f05c9cae"
 
 [[package]]
 name = "parking_lot"
@@ -1842,10 +1894,24 @@ dependencies = [
  "cc",
  "libc",
  "once_cell",
- "spin",
- "untrusted",
+ "spin 0.5.2",
+ "untrusted 0.7.1",
  "web-sys",
  "winapi",
+]
+
+[[package]]
+name = "ring"
+version = "0.17.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fb0205304757e5d899b9c2e448b867ffd03ae7f988002e47cd24954391394d0b"
+dependencies = [
+ "cc",
+ "getrandom 0.2.10",
+ "libc",
+ "spin 0.9.8",
+ "untrusted 0.9.0",
+ "windows-sys",
 ]
 
 [[package]]
@@ -2133,6 +2199,12 @@ name = "spin"
 version = "0.5.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6e63cff320ae2c57904679ba7cb63280a3dc4613885beafb148ee7bf9aa9042d"
+
+[[package]]
+name = "spin"
+version = "0.9.8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6980e8d7511241f8acf4aebddbb1ff938df5eebe98691418c4468d0b72a96a67"
 
 [[package]]
 name = "stable_deref_trait"
@@ -2508,6 +2580,12 @@ name = "untrusted"
 version = "0.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a156c684c91ea7d62626509bce3cb4e1d9ed5c4d978f7b4352658f96a4c26b4a"
+
+[[package]]
+name = "untrusted"
+version = "0.9.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8ecb6da28b8a351d773b68d5825ac39017e680750f980f3a1a85cd8dd28a47c1"
 
 [[package]]
 name = "url"

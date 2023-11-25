@@ -16,8 +16,13 @@ members = [
     "lua-hbs",
     "lua-regexp",
     "lua-env",
+
+    "blua-base",
+    "blua-shared",
+    "blua-os",
 ]
 
+resolver = "2"
 
 [profile.release]
 lto = true

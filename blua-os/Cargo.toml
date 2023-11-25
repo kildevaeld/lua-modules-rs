@@ -1,0 +1,19 @@
+[package]
+name = "blua-os"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+mlua = { version = "0.9" }
+blua-shared = { path = "../blua-shared", features = ["bytes", "stream"] }
+
+tokio = { version = "1", features = ["fs", "io-util"] }
+futures-lite = { version = "2" }
+tokio-stream = { version = "0.1", features = ["io-util", "fs"] }
+pin-project-lite = { version = "0.2" }
+locket = { git = "https://github.com/kildevaeld/locket-rs", features = [
+    "async",
+    "tokio",
+] }
