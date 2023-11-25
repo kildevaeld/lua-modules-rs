@@ -8,7 +8,7 @@ pub struct LuaMatch {
 
 impl mlua::UserData for LuaMatch {
     fn add_methods<'lua, M: mlua::UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_meta_method(MetaMethod::ToString, |_, this, args: ()| {
+        methods.add_meta_method(MetaMethod::ToString, |_, this, _args: ()| {
             Ok(this.string.clone())
         })
     }

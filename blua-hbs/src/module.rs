@@ -31,7 +31,7 @@ impl mlua::UserData for LuaHandlebars {
 
         methods.add_method_mut(
             "registerTemplate",
-            |vm, this, (name, template): (mlua::String, mlua::String)| {
+            |_vm, this, (name, template): (mlua::String, mlua::String)| {
                 this.0
                     .register_template_string(name.to_str()?, template.to_str()?)
                     .into_lua_err()?;

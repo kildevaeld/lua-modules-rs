@@ -1,7 +1,7 @@
-use std::time::Duration;
 
-use chrono::{DateTime, Datelike, FixedOffset, Local, NaiveDate, Timelike, Utc};
-use mlua::{IntoLua, MetaMethod};
+
+use chrono::{DateTime, Datelike, FixedOffset, Local, Timelike, Utc};
+use mlua::{MetaMethod};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum LuaDateTime {

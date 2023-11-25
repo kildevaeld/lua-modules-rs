@@ -46,7 +46,7 @@ impl LuaCaptures {
 
 impl mlua::UserData for LuaCaptures {
     fn add_methods<'lua, M: mlua::UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_method("get", |vm, this, item: u32| {
+        methods.add_method("get", |_vm, this, item: u32| {
             let idx = (item.max(1) - 1) as usize;
             let capture = this.0.captures.as_ref().and_then(|m| {
                 m.get(idx).and_then(|mat| {
@@ -61,7 +61,7 @@ impl mlua::UserData for LuaCaptures {
             Ok(capture)
         });
 
-        methods.add_meta_method(MetaMethod::Len, |vm, this, _: ()| {
+        methods.add_meta_method(MetaMethod::Len, |_vm, _this, _: ()| {
             // Ok(this
             //     .0
             //     .captures
