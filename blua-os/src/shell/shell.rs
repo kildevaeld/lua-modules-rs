@@ -1,0 +1,106 @@
+use crate::fs::LuaDirEntry;
+use blua_shared::stream::DynamicStreamExt;
+
+use super::exec::Exec;
+use crate::{env, fs};
+
+pub struct Shell;
+
+impl mlua::UserData for Shell {
+    fn add_fields<'lua, F: mlua::UserDataFields<'lua, Self>>(fields: &mut F) {
+        fields.add_field_function_get("cwd", |vm, _this| env::work_dir(vm));
+        fields.add_field_function_get("env", |vm, _| env::env(vm));
+        fields.add_field_function_get("args", |vm, _| env::argv(vm));
+    }
+
+    fn add_methods<'lua, M: mlua::UserDataMethods<'lua, Self>>(methods: &mut M) {
+        methods.add_async_function("ls", |vm, path: mlua::String| async move {
+            let stream = fs::read_dir(vm, path).await?;
+
+            let stream = stream
+                .try_map(|item: LuaDirEntry| item.path().display().to_string())
+                .lua_stream();
+
+            Ok(stream)
+        });
+
+        methods.add_async_function("cat", |vm, path: mlua::String| async move {
+            fs::read_file(vm, path).await
+        });
+
+        methods.add_async_function(
+            "write",
+            |vm, args: (mlua::String, mlua::String)| async move { fs::write_file(vm, args).await },
+        );
+
+        methods.add_async_function(
+            "test",
+            |_vm, (path, ftype): (mlua::String, Option<mlua::String>)| async move {
+                let Ok(meta) = tokio::fs::metadata(path.to_str()?).await else {
+                    return Ok(false);
+                };
+
+                let ret = if let Some(filetype) = ftype {
+                    match filetype.to_str()? {
+                        "file" => meta.is_file(),
+                        "dir" | "directory" => meta.is_dir(),
+                        ty => {
+                            return Err(mlua::Error::external(format!("invalid file type: {ty}")))
+                        }
+                    }
+                } else {
+                    true
+                };
+
+                Ok(ret)
+            },
+        );
+
+        methods.add_async_function("mkdir", |_vm, path: mlua::String| async move {
+            tokio::fs::create_dir_all(path.to_str()?)
+                .await
+                .map_err(mlua::Error::external)?;
+
+            Ok(())
+        });
+
+        methods.add_async_function(
+            "mv",
+            |_vm, (from, to): (mlua::String, mlua::String)| async move {
+                tokio::fs::rename(from.to_str()?, to.to_str()?)
+                    .await
+                    .map_err(mlua::Error::external)?;
+
+                Ok(())
+            },
+        );
+
+        methods.add_async_function(
+            "cp",
+            |_vm, (from, to): (mlua::String, mlua::String)| async move {
+                tokio::fs::copy(from.to_str()?, to.to_str()?)
+                    .await
+                    .map_err(mlua::Error::external)?;
+
+                Ok(())
+            },
+        );
+
+        methods.add_function("exec", |_ctx, args: mlua::String| {
+            Ok(Exec::from(args.to_str()?))
+        });
+
+        methods.add_function("sh", |_ctx, args: mlua::String| {
+            Ok(Exec::new(
+                "sh".to_string(),
+                vec!["-c".to_string(), args.to_str()?.to_string()],
+            ))
+        });
+
+        #[allow(unreachable_code)]
+        methods.add_function("exit", |_, code: i32| {
+            std::process::exit(code);
+            Ok(())
+        });
+    }
+}

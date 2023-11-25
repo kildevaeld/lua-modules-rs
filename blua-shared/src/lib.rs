@@ -1,6 +1,7 @@
 #[macro_use]
 mod macros;
 
+pub mod iter;
 mod types;
 mod utils;
 

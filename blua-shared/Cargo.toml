@@ -11,7 +11,7 @@ stream = ["futures-lite", "async-trait", "locket"]
 send = []
 
 [dependencies]
-mlua = { version = "0.9", feature = ["async"] }
+mlua = { version = "0.9", features = ["async"] }
 bytes = { version = "1" }
 data-encoding = { version = "2", optional = true }
 async-trait = { version = "0.1", optional = true }
@@ -19,4 +19,5 @@ futures-lite = { version = "2", optional = true }
 locket = { git = "https://github.com/kildevaeld/locket-rs", features = [
     "async",
     "tokio",
+    "std",
 ], optional = true }

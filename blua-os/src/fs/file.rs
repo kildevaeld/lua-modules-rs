@@ -45,7 +45,7 @@ pub async fn write_file(
     Ok(())
 }
 
-async fn open_file(_vm: &mlua::Lua, path: mlua::String<'_>) -> mlua::Result<File> {
+async fn open_file(_vm: &mlua::Lua, path: mlua::String<'_>) -> mlua::Result<LuaFile> {
     let path = path.to_str()?;
 
     let stream = tokio::fs::OpenOptions::default()
@@ -53,7 +53,7 @@ async fn open_file(_vm: &mlua::Lua, path: mlua::String<'_>) -> mlua::Result<File
         .open(path)
         .await?;
 
-    Ok(File {
+    Ok(LuaFile {
         file: new_lock(stream),
     })
 }
@@ -66,7 +66,7 @@ pin_project_lite::pin_project! {
 }
 
 impl Stream for ReadDir {
-    type Item = Result<DirEntry, mlua::Error>;
+    type Item = Result<LuaDirEntry, mlua::Error>;
     fn poll_next(
         self: std::pin::Pin<&mut Self>,
         cx: &mut std::task::Context<'_>,
@@ -75,7 +75,7 @@ impl Stream for ReadDir {
         match ready!(this.stream.poll_next(cx)) {
             Some(entry) => Poll::Ready(Some(
                 entry
-                    .map(|m| DirEntry { entry: m.into() })
+                    .map(|m| LuaDirEntry { entry: m.into() })
                     .map_err(mlua::Error::external),
             )),
             None => Poll::Ready(None),
@@ -84,17 +84,17 @@ impl Stream for ReadDir {
 }
 
 #[derive(Clone)]
-pub struct DirEntry {
+pub struct LuaDirEntry {
     entry: Lrc<tokio::fs::DirEntry>,
 }
 
-impl DirEntry {
+impl LuaDirEntry {
     pub fn path(&self) -> PathBuf {
         self.entry.path()
     }
 }
 
-impl mlua::UserData for DirEntry {
+impl mlua::UserData for LuaDirEntry {
     fn add_fields<'lua, F: mlua::UserDataFields<'lua, Self>>(fields: &mut F) {
         fields.add_field_method_get("path", |_vm, this| {
             let path = this.entry.path();
@@ -131,11 +131,11 @@ impl mlua::UserData for DirEntry {
 }
 
 #[derive(Clone)]
-pub struct File {
+pub struct LuaFile {
     file: Locket<tokio::fs::File>,
 }
 
-impl mlua::UserData for File {
+impl mlua::UserData for LuaFile {
     fn add_methods<'lua, M: mlua::UserDataMethods<'lua, Self>>(methods: &mut M) {
         methods.add_async_method("lines", |_vm, this, _args: ()| async move {
             //
