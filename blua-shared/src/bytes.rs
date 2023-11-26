@@ -29,7 +29,7 @@ impl mlua::UserData for LuaBuffer {
     fn add_methods<'lua, M: mlua::UserDataMethods<'lua, Self>>(methods: &mut M) {
         methods.add_meta_method(MetaMethod::Len, |_, this, _: ()| Ok(this.0.len()));
 
-        methods.add_method("toString", |_vm, this, encoding: mlua::String| {
+        methods.add_method("to_string", |_vm, this, encoding: mlua::String| {
             let bytes = this.0.chunk();
 
             let out = match encoding.to_str()? {

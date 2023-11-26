@@ -5,7 +5,7 @@ use bytes::Bytes;
 use encoding_rs::{Encoding, UTF_8};
 use hyper::header::CONTENT_TYPE;
 use mime::Mime;
-use mlua::{IntoLua, LuaSerdeExt, UserData};
+use mlua::{LuaSerdeExt, UserData};
 
 use crate::util::to_bytes;
 

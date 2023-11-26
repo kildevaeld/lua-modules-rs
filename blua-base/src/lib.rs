@@ -8,10 +8,12 @@ pub mod json;
 pub mod regexp;
 #[cfg(feature = "util")]
 mod util;
+pub mod uuid;
 
 pub fn write_definitions(path: &Path) -> std::io::Result<()> {
     date::write_definition(path)?;
     json::write_definition(path)?;
+    uuid::write_definition(path)?;
     #[cfg(feature = "crypto")]
     crypto::write_definition(path)?;
     #[cfg(feature = "regexp")]
@@ -25,6 +27,7 @@ pub fn write_definitions(path: &Path) -> std::io::Result<()> {
 pub fn register(vm: &mlua::Lua) -> mlua::Result<()> {
     date::register_module(vm)?;
     json::register_module(vm)?;
+    uuid::register_module(vm)?;
     #[cfg(feature = "crypto")]
     crypto::register_module(vm)?;
     #[cfg(feature = "regexp")]

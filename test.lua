@@ -9,6 +9,10 @@ local date = require 'blua.time'
 local regxp = require 'blua.regexp'
 local hbs = require 'blua.hbs'
 local http = require 'blua.http'
+local uuid = require 'blua.uuid'
+
+
+print("uuid " .. uuid.new():to_bytes():to_string("hex"))
 
 
 local resp = http.get("http://google.com");
@@ -35,7 +39,7 @@ config.write("Config.json", toml)
 
 local hash = crypto.sha256(json.encode(toml));
 
-print("Hash " .. hash:toString("hex"))
+print("Hash " .. hash:to_string("hex"))
 
 
 print("CWD " .. env.cwd .. " ARGS " .. util.dump(env.args) .. " PATH " .. env.env.PWD);
