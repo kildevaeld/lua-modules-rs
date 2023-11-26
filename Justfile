@@ -8,4 +8,4 @@ install:
 
 
 cross-build:
-    cross build -p blua-cli --target x86_64-unknown-linux-musl  --release
+    cross build -p blua-cli --target x86_64-unknown-linux-musl --no-default-features --features luajit,vendored  --release

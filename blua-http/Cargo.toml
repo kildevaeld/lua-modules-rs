@@ -5,9 +5,17 @@ edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[features]
+default = ["native-tls"]
+vendored = ["reqwest/native-tls-vendored"]
+native-tls = ["reqwest/native-tls"]
+
 [dependencies]
 mlua = { version = "0.9", features = ["async", "serialize"] }
-reqwest = { version = "0.11" }
+reqwest = { version = "0.11", default-features = false, features = [
+    "gzip",
+    "deflate",
+] }
 bytes = { version = "1" }
 hyper = { version = "0.14" }
 serde_json = { version = "1" }

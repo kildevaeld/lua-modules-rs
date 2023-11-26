@@ -19,10 +19,10 @@ Image = {}
 
 --- @param path string
 --- @return Image
-function Module.new(path) end
+function Module.open(path) end
 
 --- @param bytes Buffer
 --- @return Image
-function Module.open(bytes) end
+function Module.new(bytes) end
 
 return Module

@@ -4,16 +4,24 @@ version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[[bin]]
+name = "blua"
+path = "src/main.rs"
+
 [features]
-default = ["luajit52"]
+default = ["luajit", "blua-http/native-tls"]
 lua54 = ["mlua/lua54"]
 lua53 = ["mlua/lua53"]
-luajit52 = ["mlua/luajit52"]
+luajit = ["mlua/luajit52"]
+vendored = ["mlua/vendored", "blua-http/vendored"]
 
 [dependencies]
-mlua = { version = "0.9", features = ["async", "vendored"] }
+mlua = { version = "0.9", features = ["async"] }
 blua-shared = { path = "../blua-shared" }
 blua = { path = "../blua", features = ["full"] }
+blua-http = { path = "../blua-http", default-features = false }
+
 
 tokio = { version = "1", features = ["fs", "macros", "rt"] }
 clap = { version = "4", features = [] }

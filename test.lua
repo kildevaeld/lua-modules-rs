@@ -10,14 +10,21 @@ local regxp = require 'blua.regexp'
 local hbs = require 'blua.hbs'
 local http = require 'blua.http'
 local uuid = require 'blua.uuid'
+local Image = require 'blua.image'
 
 
 print("uuid " .. uuid.new():to_bytes():to_string("hex"))
 
 
-local resp = http.get("http://google.com");
+local resp = http.get("https://pumpehuset.dk/wp-content/uploads/concert-images/pressephotoTIC-2023-scaled-8.jpg");
 
+local image = Image.new(resp:bytes())
 
+print("image size w:" .. image.width .. " h:" .. image.height)
+
+image = image:thumbnail(200, 300, true)
+
+image:write("image.jpg")
 
 
 hbs = hbs.create()

@@ -132,6 +132,10 @@ impl UserData for LuaImage {
                     .write_to(&mut Cursor::new(&mut bytes), format)
                     .map_err(mlua::Error::external)?;
 
+                tokio::fs::write(path, bytes)
+                    .await
+                    .map_err(mlua::Error::external)?;
+
                 Ok(())
             },
         );
@@ -152,7 +156,7 @@ impl UserData for LuaImage {
         );
 
         methods.add_method(
-            "thumbnail",
+            "resize",
             |_, this, (w, h, ty, exact): (u32, u32, LuaFilterType, Option<bool>)| {
                 let exact = exact.unwrap_or_default();
 
