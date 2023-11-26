@@ -8,6 +8,12 @@ local env = require 'blua.env'
 local date = require 'blua.time'
 local regxp = require 'blua.regexp'
 local hbs = require 'blua.hbs'
+local http = require 'blua.http'
+
+
+local resp = http.get("http://google.com");
+
+
 
 
 hbs = hbs.create()

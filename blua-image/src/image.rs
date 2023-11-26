@@ -8,7 +8,7 @@ pub struct LuaImageFormat(image::ImageOutputFormat);
 impl<'lua> FromLua<'lua> for LuaImageFormat {
     fn from_lua(
         value: mlua::prelude::LuaValue<'lua>,
-        lua: &'lua mlua::prelude::Lua,
+        _lua: &'lua mlua::prelude::Lua,
     ) -> mlua::prelude::LuaResult<Self> {
         let Some(string) = value.as_str() else {
             return Err(mlua::Error::external("expected string"));
@@ -31,12 +31,12 @@ impl<'lua> IntoLua<'lua> for LuaImageFormat {
         self,
         lua: &'lua mlua::prelude::Lua,
     ) -> mlua::prelude::LuaResult<mlua::prelude::LuaValue<'lua>> {
-        use image::ImageOutputFormat::*;
+        use image::ImageOutputFormat;
         let fmt = match self.0 {
-            Png => "png",
-            Jpeg(_) => "jpg",
+            ImageOutputFormat::Png => "png",
+            ImageOutputFormat::Jpeg(_) => "jpg",
             #[cfg(feature = "webp")]
-            Webp => "webp",
+            ImageOutputFormat::WebP => "webp",
             _ => return Err(mlua::Error::external("unsupported debug")),
         };
 

@@ -74,9 +74,6 @@ async fn run_command(
         blua::util::search_path::append(&lua, &string.to_string())?;
     }
 
-    blua_hbs::register_module(&lua)?;
-    blua_config::register_module(&lua)?;
-
     let mut script = &*tokio::fs::read(&path).await?;
 
     if script.len() >= 2 && script[0] as char == '#' && script[1] as char == '!' {
@@ -99,12 +96,7 @@ async fn types_command<P: Into<PathBuf>>(path: P) -> Result<(), Box<dyn std::err
         tokio::fs::create_dir_all(&path).await?;
     }
 
-    tokio::task::spawn_blocking(move || {
-        blua::write_definitions(&path)?;
-        blua_hbs::write_definition(&path)?;
-        blua_config::write_definition(&path)
-    })
-    .await??;
+    tokio::task::spawn_blocking(move || blua::write_definitions(&path)).await??;
 
     Ok(())
 }

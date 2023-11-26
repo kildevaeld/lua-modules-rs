@@ -16,10 +16,24 @@ luajit52 = ["luajit", "mlua/luajit52"]
 luau = ["mlua/luau"]
 luau-jit = ["luau", "mlua/luau-jit"]
 
+full = ["os", "image", "hbs", "config", "http"]
+
 os = ["blua-os"]
+image = ["blua-image"]
+hbs = ["blua-hbs"]
+config = ["blua-config"]
+http = ["blua-http"]
 
 [dependencies]
 mlua = { version = "0.9" }
 blua-base = { path = "../blua-base" }
 blua-os = { path = "../blua-os", optional = true }
+blua-config = { path = "../blua-config", features = [
+    "toml",
+    "ron",
+    "yaml",
+], optional = true }
+blua-hbs = { path = "../blua-hbs", optional = true }
+blua-image = { path = "../blua-image", features = ["webp"], optional = true }
+blua-http = { path = "../blua-http", optional = true }
 blua-shared = { path = "../blua-shared" }

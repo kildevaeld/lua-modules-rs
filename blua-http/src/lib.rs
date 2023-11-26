@@ -1,14 +1,13 @@
-pub fn add(left: usize, right: usize) -> usize {
-    left + right
-}
+mod module;
+mod response;
+mod types;
+mod util;
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+use blua_shared::definition;
+use mlua::IntoLua;
 
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
-    }
+definition!(BLUA_HTTP("blua.http") = "../definitions/blua.http.lua");
+
+pub fn register_module(vm: &mlua::Lua) -> mlua::Result<()> {
+    blua_shared::module::register(vm, "blua.http", |vm| module::Module.into_lua(vm))
 }

@@ -2,6 +2,16 @@ pub fn write_definitions(path: &std::path::Path) -> std::io::Result<()> {
     blua_base::write_definitions(path)?;
     #[cfg(feature = "os")]
     blua_os::write_definitions(path)?;
+
+    #[cfg(feature = "hbs")]
+    blua_hbs::write_definition(path)?;
+    #[cfg(feature = "config")]
+    blua_config::write_definition(path)?;
+    #[cfg(feature = "image")]
+    blua_image::write_definition(path)?;
+    #[cfg(feature = "http")]
+    blua_http::write_definition(path)?;
+
     Ok(())
 }
 
@@ -9,6 +19,16 @@ pub fn register_module(vm: &mlua::Lua) -> mlua::Result<()> {
     blua_base::register(vm)?;
     #[cfg(feature = "os")]
     blua_os::register(vm)?;
+
+    #[cfg(feature = "hbs")]
+    blua_hbs::register_module(vm)?;
+    #[cfg(feature = "config")]
+    blua_config::register_module(vm)?;
+    #[cfg(feature = "image")]
+    blua_image::register_module(vm)?;
+    #[cfg(feature = "http")]
+    blua_http::register_module(vm)?;
+
     Ok(())
 }
 

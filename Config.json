@@ -9,13 +9,16 @@
   },
   "workspace": {
     "members": [
+      "lua-worker",
       "blua-base",
       "blua-shared",
       "blua-os",
       "blua-hbs",
       "blua-config",
+      "blua-image",
       "blua",
-      "blua-cli"
+      "blua-cli",
+      "blua-http"
     ],
     "resolver": "2"
   }
