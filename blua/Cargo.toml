@@ -16,13 +16,16 @@ luajit52 = ["luajit", "mlua/luajit52"]
 luau = ["mlua/luau"]
 luau-jit = ["luau", "mlua/luau-jit"]
 
-full = ["os", "image", "hbs", "config", "http"]
+full = ["os", "image", "hbs", "config", "http", "crypto", "regexp", "util"]
 
 os = ["blua-os"]
 image = ["blua-image"]
 hbs = ["blua-hbs"]
 config = ["blua-config"]
 http = ["blua-http"]
+crypto = ["blua-base/crypto"]
+regexp = ["blua-base/regexp"]
+util = ["blua-base/util"]
 
 [dependencies]
 mlua = { version = "0.9" }
