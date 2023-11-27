@@ -6,7 +6,7 @@ mod time;
 
 use blua_shared::definition;
 
-pub use self::{date::LuaDate, datetime::LuaDateTime, init, time::LuaTime};
+pub use self::{date::LuaDate, datetime::LuaDateTime, init::init, time::LuaTime};
 
 definition!(CORE_TIME("blua.time") = "../../definitions/blua.time.lua");
 
