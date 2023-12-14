@@ -19,6 +19,20 @@ function Regexp:find_first(haystack) end
 function Regexp:find(haystack) end
 
 --- @param haystack string
+--- @param replacement string
+--- @return string
+function Regexp:replace(haystack, replacement) end
+
+--- @param haystack string
+--- @param replacement string
+--- @return string
+function Regexp:replace_all(haystack, replacement) end
+
+--- @param haystack string
+--- @return string[]
+function Regexp:split(haystack) end
+
+--- @param haystack string
 --- @return Captures | nil
 function Regexp:captures(haystack) end
 
