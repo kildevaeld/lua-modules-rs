@@ -26,6 +26,8 @@ members = [
     "blua",
     "blua-cli",
     "blua-http",
+    "blua-vfs",
+    "blua-modules",
 ]
 
 resolver = "2"

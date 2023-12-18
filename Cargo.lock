@@ -133,6 +133,11 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d468802bab17cbc0cc575e9b053f41e72aa36bfa6b7f55e3529ffa43161b97fa"
 
 [[package]]
+name = "avagarden"
+version = "0.1.0"
+source = "git+https://github.com/kildevaeld/avagarden#c12f58d7be102347f9341a7b0fb84d98753e2480"
+
+[[package]]
 name = "backtrace"
 version = "0.3.68"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -264,6 +269,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "blua-modules"
+version = "0.1.0"
+dependencies = [
+ "mlua",
+]
+
+[[package]]
 name = "blua-os"
 version = "0.1.0"
 dependencies = [
@@ -288,6 +300,15 @@ dependencies = [
  "futures-lite",
  "locket",
  "mlua",
+]
+
+[[package]]
+name = "blua-vfs"
+version = "0.1.0"
+dependencies = [
+ "blua-shared",
+ "mlua",
+ "vfs",
 ]
 
 [[package]]
@@ -2110,6 +2131,17 @@ name = "version_check"
 version = "0.9.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "49874b5167b65d7193b8aba1567f5c7d93d001cafc34600cee003eda787e483f"
+
+[[package]]
+name = "vfs"
+version = "0.6.0"
+source = "git+https://github.com/kildevaeld/vfs-rs?branch=v3#7e6d2c1f945cd926aa88326b5961c349fbca8bcb"
+dependencies = [
+ "async-trait",
+ "avagarden",
+ "futures-core",
+ "pin-project-lite",
+]
 
 [[package]]
 name = "want"
