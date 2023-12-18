@@ -12,6 +12,9 @@ local http = require 'blua.http'
 local uuid = require 'blua.uuid'
 local Image = require 'blua.image'
 
+local TEST = require './test2'
+
+
 
 print("uuid " .. uuid.new():to_bytes():to_string("hex"))
 
