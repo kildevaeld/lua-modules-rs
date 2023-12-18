@@ -272,7 +272,10 @@ dependencies = [
 name = "blua-modules"
 version = "0.1.0"
 dependencies = [
+ "async-trait",
  "mlua",
+ "relative-path",
+ "vfs",
 ]
 
 [[package]]

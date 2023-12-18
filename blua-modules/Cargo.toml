@@ -5,8 +5,14 @@ edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [features]
-default = []
-async = ["mlua/async"]
+default = ["async", "vfs"]
+async = ["mlua/async", "async-trait", "vfs?/async"]
+vfs = ["dep:vfs"]
 
 [dependencies]
 mlua = { version = "0.9" }
+async-trait = { version = "0.1", optional = true }
+relative-path = { version = "1" }
+vfs = { git = "https://github.com/kildevaeld/vfs-rs", branch = "v3", features = [
+    "std",
+], optional = true }
