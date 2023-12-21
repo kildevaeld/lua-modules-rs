@@ -14,4 +14,4 @@ blua-shared = { path = "../blua-shared" }
 vfs = { git = "https://github.com/kildevaeld/vfs-rs", branch = "v3", features = [
     "std",
 ] }
-mlua = { version = "0.9" }
+mlua = { version = "0.9", features = [] }
