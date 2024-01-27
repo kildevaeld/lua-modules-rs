@@ -2,7 +2,10 @@
 mod async_pool;
 mod callback;
 mod worker;
-pub use self::{callback::*, worker::Worker};
+pub use self::{
+    callback::*,
+    worker::{LuaExt, WeakWorker, Worker},
+};
 
 #[cfg(feature = "pool")]
 pub mod pool {

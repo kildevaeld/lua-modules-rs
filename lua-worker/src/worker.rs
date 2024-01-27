@@ -1,6 +1,7 @@
 use async_channel as mpsc;
 use std::{
     any::Any,
+    sync::{Arc, Weak},
     thread::{spawn, JoinHandle},
 };
 
@@ -18,32 +19,27 @@ enum Msg {
 }
 
 pub struct Worker {
-    sx: Option<mpsc::Sender<Msg>>,
+    sx: Option<Arc<mpsc::Sender<Msg>>>,
     handle: Option<JoinHandle<()>>,
 }
 
-// impl Default for Worker {
-//     fn default() -> Self {
-//         Worker::new(|| Ok(mlua::Lua::new()))
-//     }
-// }
-
 impl Worker {
     #[cfg(feature = "tokio")]
-    pub async fn new<F>(init: F) -> Result<Worker, mlua::Error>
+    fn create_handle<F>(
+        sx: &Arc<mpsc::Sender<Msg>>,
+        rx: mpsc::Receiver<Msg>,
+        ready: oneshot::Sender<mlua::Result<()>>,
+        init: F,
+    ) -> Result<JoinHandle<()>, mlua::Error>
     where
         F: FnOnce() -> Result<mlua::Lua, mlua::Error> + Send + 'static,
     {
-        use std::rc::Rc;
-
-        let (sx, rx) = mpsc::unbounded();
-
-        let (mark_ready, ready) = oneshot::channel();
-
         let rt = tokio::runtime::Builder::new_current_thread()
             .enable_all()
             .build()
             .map_err(mlua::Error::external)?;
+
+        let weak = Arc::downgrade(sx);
 
         let handle = spawn(move || {
             let local = tokio::task::LocalSet::new();
@@ -51,16 +47,18 @@ impl Worker {
             local.spawn_local(async move {
                 let vm = match init() {
                     Ok(ret) => {
-                        mark_ready.send(Ok(())).ok();
+                        ready.send(Ok(())).ok();
                         ret
                     }
                     Err(err) => {
-                        mark_ready.send(Err(err)).ok();
+                        ready.send(Err(err)).ok();
                         return;
                     }
                 };
 
-                let vm = Rc::new(vm);
+                vm.set_app_data(WeakWorker { sender: weak });
+
+                let vm = std::rc::Rc::new(vm);
 
                 while let Ok(next) = rx.recv().await {
                     let vm = vm.clone();
@@ -83,35 +81,35 @@ impl Worker {
             rt.block_on(local);
         });
 
-        ready.await.expect("ready channel")?;
-
-        Ok(Worker {
-            sx: Some(sx),
-            handle: Some(handle),
-        })
+        Ok(handle)
     }
 
     #[cfg(all(feature = "async", not(feature = "tokio")))]
-    pub async fn new<F>(init: F) -> Result<Worker, mlua::Error>
+    async fn create_handle<F>(
+        sx: &Arc<mpsc::Sender<Msg>>,
+        rx: mpsc::Receiver<Msg>,
+        ready: oneshot::Sender<mlua::Result<()>>,
+        init: F,
+    ) -> Result<JoinHandle<()>, mlua::Error>
     where
         F: FnOnce() -> Result<mlua::Lua, mlua::Error> + Send + 'static,
     {
-        let (sx, rx) = mpsc::bounded(1);
-
-        let (mark_ready, ready) = oneshot::channel();
+        let weak = Arc::downgrade(sx);
 
         let handle = spawn(move || {
             futures_lite::future::block_on(async move {
                 let vm = match init() {
                     Ok(ret) => {
-                        mark_ready.send(Ok(())).ok();
+                        ready.send(Ok(())).ok();
                         ret
                     }
                     Err(err) => {
-                        mark_ready.send(Err(err)).ok();
+                        ready.send(Err(err)).ok();
                         return;
                     }
                 };
+
+                vm.set_app_data(WeakWorker { sender: weak });
 
                 while let Ok(next) = rx.recv().await {
                     match next {
@@ -128,33 +126,34 @@ impl Worker {
             })
         });
 
-        ready.await.expect("ready channel")?;
-
-        Ok(Worker {
-            sx: Some(sx),
-            handle: Some(handle),
-        })
+        Ok(handle)
     }
 
     #[cfg(not(feature = "async"))]
-    pub fn new<F>(init: F) -> Result<Worker, mlua::Error>
+    fn create_handle<F>(
+        sx: &Arc<mpsc::Sender<Msg>>,
+        rx: mpsc::Receiver<Msg>,
+        ready: oneshot::Sender<mlua::Result<()>>,
+        init: F,
+    ) -> Result<JoinHandle<()>, mlua::Error>
     where
         F: FnOnce() -> Result<mlua::Lua, mlua::Error> + Send + 'static,
     {
-        let (sx, rx) = mpsc::bounded(1);
-        let (mark_ready, ready) = oneshot::channel();
+        let weak = Arc::downgrade(sx);
 
         let handle = spawn(move || {
             let vm = match init() {
                 Ok(ret) => {
-                    mark_ready.send(Ok(())).ok();
+                    ready.send(Ok(())).ok();
                     ret
                 }
                 Err(err) => {
-                    mark_ready.send(Err(err)).ok();
+                    ready.send(Err(err)).ok();
                     return;
                 }
             };
+
+            vm.set_app_data(WeakWorker { sender: weak });
 
             while let Ok(next) = rx.recv_blocking() {
                 match next {
@@ -169,6 +168,41 @@ impl Worker {
                 }
             }
         });
+
+        Ok(handle)
+    }
+
+    #[cfg(feature = "async")]
+    pub async fn new<F>(init: F) -> Result<Worker, mlua::Error>
+    where
+        F: FnOnce() -> Result<mlua::Lua, mlua::Error> + Send + 'static,
+    {
+        let (sx, rx) = mpsc::unbounded();
+        let sx = Arc::new(sx);
+
+        let (mark_ready, ready) = oneshot::channel();
+
+        let handle = Self::create_handle(&sx, rx, mark_ready, init)?;
+
+        ready.await.expect("ready channel")?;
+
+        Ok(Worker {
+            sx: Some(sx),
+            handle: Some(handle),
+        })
+    }
+
+    #[cfg(not(feature = "async"))]
+    pub fn new<F>(init: F) -> Result<Worker, mlua::Error>
+    where
+        F: FnOnce() -> Result<mlua::Lua, mlua::Error> + Send + 'static,
+    {
+        let (sx, rx) = mpsc::unbounded();
+        let sx = Arc::new(sx);
+
+        let (mark_ready, ready) = oneshot::channel();
+
+        let handle = Self::create_handle(&sx, rx, mark_ready, init)?;
 
         ready
             .recv_timeout(std::time::Duration::from_millis(500))
@@ -268,5 +302,123 @@ impl Drop for Worker {
     fn drop(&mut self) {
         drop(self.sx.take().unwrap());
         drop(self.handle.take().unwrap().join());
+    }
+}
+
+#[derive(Clone)]
+pub struct WeakWorker {
+    sender: Weak<mpsc::Sender<Msg>>,
+}
+
+impl WeakWorker {
+    pub async fn with_async<F>(&self, func: F) -> Result<(), mlua::Error>
+    where
+        F: LuaCallback<()> + Send + 'static,
+    {
+        let (sx, rx) = oneshot::channel();
+        self.send_async(Msg::With {
+            with: Box::new(func),
+            returns: sx,
+        })
+        .await?;
+
+        rx.await.unwrap()
+    }
+
+    pub async fn with_async_ret<F, R>(&self, func: F) -> Result<R, mlua::Error>
+    where
+        F: LuaCallback<R> + Send + 'static,
+        R: 'static + Send,
+    {
+        let (sx, rx) = oneshot::channel();
+
+        let cb = Return::new(func);
+
+        let with = Box::new(cb) as Box<dyn LuaCallback<Box<dyn Any + Send>> + Send>;
+
+        self.send_async(Msg::WithReturn { with, returns: sx })
+            .await?;
+
+        let ret = rx.await.unwrap()?;
+
+        if let Ok(ret) = ret.downcast::<R>() {
+            Ok(*ret)
+        } else {
+            Err(mlua::Error::external("could not convert type"))
+        }
+    }
+
+    pub fn with<F>(&self, func: F) -> Result<(), mlua::Error>
+    where
+        F: LuaCallback<()> + Send + 'static,
+    {
+        let (sx, rx) = oneshot::channel();
+        self.send(Msg::With {
+            with: Box::new(func),
+            returns: sx,
+        })?;
+
+        rx.recv().unwrap()
+    }
+
+    pub fn with_ret<F, R>(&self, func: F) -> Result<R, mlua::Error>
+    where
+        F: LuaCallback<R> + Send + 'static,
+        R: 'static + Send,
+    {
+        let (sx, rx) = oneshot::channel();
+
+        let cb = Return::new(func);
+
+        let with = Box::new(cb) as Box<dyn LuaCallback<Box<dyn Any + Send>> + Send>;
+
+        self.send(Msg::WithReturn { with, returns: sx })?;
+
+        let ret = rx.recv().unwrap()?;
+
+        if let Ok(ret) = ret.downcast::<R>() {
+            Ok(*ret)
+        } else {
+            Err(mlua::Error::external("could not convert type"))
+        }
+    }
+
+    async fn send_async(&self, msg: Msg) -> mlua::Result<()> {
+        if let Some(sx) = self.sender.upgrade() {
+            sx.send(msg)
+                .await
+                .map_err(|_| mlua::Error::external("channel closed"))?;
+            Ok(())
+        } else {
+            Err(mlua::Error::external("worker closed"))
+        }
+    }
+
+    fn send(&self, msg: Msg) -> mlua::Result<()> {
+        if let Some(sx) = self.sender.upgrade() {
+            sx.send_blocking(msg)
+                .map_err(|_| mlua::Error::external("channel closed"))?;
+            Ok(())
+        } else {
+            Err(mlua::Error::external("worker closed"))
+        }
+    }
+}
+
+mod sealed {
+    pub trait Sealed {}
+
+    impl Sealed for mlua::Lua {}
+}
+
+pub trait LuaExt: sealed::Sealed {
+    fn worker(&self) -> mlua::Result<WeakWorker>;
+}
+
+impl LuaExt for mlua::Lua {
+    fn worker(&self) -> mlua::Result<WeakWorker> {
+        self.app_data_ref::<WeakWorker>()
+            .map(|data| data.clone())
+            .ok_or_else(|| mlua::Error::external("weak worker"))
     }
 }
