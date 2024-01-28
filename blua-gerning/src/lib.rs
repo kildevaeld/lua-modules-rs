@@ -1,7 +1,12 @@
-use std::{collections::HashMap, env::Args, future::Future, pin::Pin};
+use std::{
+    collections::{BTreeMap, HashMap},
+    env::Args,
+    future::Future,
+    pin::Pin,
+};
 
 use gerning::{
-    service::{HasState, State},
+    service::{HasState, SendState, State},
     signature::Signature,
     Value,
 };
@@ -183,15 +188,47 @@ where
     })
 }
 
+pub fn create_method<'lua, V: Value + mlua::FromLua<'lua>>(
+    vm: &'lua mlua::Lua,
+    args: mlua::Table<'lua>,
+) -> mlua::Result<LuaMethod<V>>
+where
+    V::Type: mlua::FromLua<'lua>,
+{
+    let params: Option<Vec<V::Type>> = args.get("params")?;
+    let returns: V::Type = args.get("returns")?;
+    let func: mlua::Function = args.get("call")?;
+    let call = lua_worker::Callable::new(vm, func)?;
+
+    let mut builder = gerning::signature::Parameters::<V>::build();
+
+    let params = params.unwrap_or_default();
+
+    for p in params {
+        builder.add(p);
+    }
+
+    let sig = gerning::signature::Signature::new(builder.build(), returns);
+    Ok(LuaMethod {
+        func: call,
+        signature: sig,
+    })
+}
+
 pub struct ServiceBuilder<S: gerning::service::ServiceType, T: HasState, C, V: Value> {
     builder: gerning::service::DynService<T, S, C, V>,
 }
 
-impl<T, C, V> mlua::UserData for ServiceBuilder<gerning::service::Sync, T, C, V>
+impl<C, V> mlua::UserData
+    for ServiceBuilder<gerning::service::Sync, SendState<BTreeMap<String, V>>, C, V>
 where
-    V: Value,
-    T: HasState,
-    T::State: State<V>,
+    V: Value + Send + 'static + Clone,
+    V::Type: Clone,
+
+    C: Clone + Send + 'static,
+    for<'lua> V: mlua::IntoLua<'lua> + mlua::FromLua<'lua>,
+    for<'lua> C: mlua::IntoLua<'lua>,
+    for<'lua> V::Type: mlua::FromLua<'lua>,
 {
     fn add_methods<'lua, M: mlua::prelude::LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         methods.add_method_mut(
@@ -199,7 +236,7 @@ where
             |vm, this, (name, args): (mlua::String, mlua::Table)| {
                 //
                 this.builder
-                    .register(name.to_str()?, create_callable(vm, args)?);
+                    .register(name.to_str()?, create_method(vm, args)?);
                 Ok(())
             },
         );
