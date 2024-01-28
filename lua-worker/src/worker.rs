@@ -1,11 +1,13 @@
+use crate::callable::ItemId;
+use crate::{LuaCallback, Return};
 use async_channel as mpsc;
+use mlua::RegistryKey;
+use std::collections::BTreeMap;
 use std::{
     any::Any,
     sync::{Arc, Weak},
     thread::{spawn, JoinHandle},
 };
-
-use crate::{LuaCallback, Return};
 
 enum Msg {
     With {
@@ -182,7 +184,12 @@ impl Worker {
 
         let (mark_ready, ready) = oneshot::channel();
 
-        let handle = Self::create_handle(&sx, rx, mark_ready, init)?;
+        let handle = Self::create_handle(&sx, rx, mark_ready, move || {
+            let vm = init()?;
+            vm.set_app_data(BTreeMap::<ItemId, RegistryKey>::new());
+            Ok(vm)
+        })
+        .await?;
 
         ready.await.expect("ready channel")?;
 
@@ -202,7 +209,11 @@ impl Worker {
 
         let (mark_ready, ready) = oneshot::channel();
 
-        let handle = Self::create_handle(&sx, rx, mark_ready, init)?;
+        let handle = Self::create_handle(&sx, rx, mark_ready, move || {
+            let vm = init()?;
+            vm.set_app_data(BTreeMap::<ItemId, RegistryKey>::new());
+            Ok(vm)
+        })?;
 
         ready
             .recv_timeout(std::time::Duration::from_millis(500))
