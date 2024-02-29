@@ -7,6 +7,7 @@ use crate::error::LoadError;
 use vfs::{OpenOptions, VFileExt, VPath};
 #[cfg(all(feature = "vfs", feature = "async"))]
 use vfs::{VAsyncFileExt, VAsyncPath};
+
 pub trait ModuleLoader {
     fn resolve(&self, module: &str, parent: Option<&str>) -> Option<String>;
     fn load<'lua>(
@@ -73,6 +74,8 @@ impl ModuleLoader for DirLoader {
             return Err(LoadError::NotFound);
         };
 
+        println!("LOAD");
+
         let value = vm
             .load(content)
             .set_name(resolved)
@@ -86,6 +89,13 @@ impl ModuleLoader for DirLoader {
 #[cfg(feature = "vfs")]
 pub struct VFSLoader<T> {
     fs: T,
+}
+
+#[cfg(feature = "vfs")]
+impl<T> VFSLoader<T> {
+    pub fn new(fs: T) -> VFSLoader<T> {
+        VFSLoader { fs }
+    }
 }
 
 #[cfg(feature = "vfs")]
@@ -151,6 +161,13 @@ pub struct VFSAsyncLoader<T> {
 }
 
 #[cfg(all(feature = "vfs", feature = "async"))]
+impl<T> VFSAsyncLoader<T> {
+    pub fn new(fs: T) -> VFSAsyncLoader<T> {
+        VFSAsyncLoader { fs }
+    }
+}
+
+#[cfg(all(feature = "vfs", feature = "async"))]
 #[async_trait::async_trait(?Send)]
 impl<T: vfs::VAsyncFS> AsyncModuleLoader for VFSAsyncLoader<T>
 where
@@ -209,5 +226,32 @@ where
             .eval()?;
 
         Ok(value)
+    }
+}
+
+pub struct BuiltIn;
+
+impl ModuleLoader for BuiltIn {
+    fn resolve(&self, module: &str, _parent: Option<&str>) -> Option<String> {
+        match module {
+            "table" | "coroutine" | "string" => Some(module.to_string()),
+            _ => None,
+        }
+    }
+
+    fn load<'lua>(
+        &self,
+        vm: &'lua mlua::Lua,
+        _env: mlua::Value<'lua>,
+        resolved: &str,
+    ) -> Result<mlua::Value<'lua>, LoadError> {
+        let pkg = vm
+            .globals()
+            .get::<_, mlua::Table>("package")?
+            .get::<_, mlua::Table>("preload")?;
+
+        let resolved: mlua::Function = pkg.get(resolved).map_err(|_| LoadError::NotFound)?;
+
+        Ok(resolved.call(())?)
     }
 }

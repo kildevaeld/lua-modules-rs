@@ -1,0 +1,17 @@
+[package]
+name = "blua-worker"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[features]
+default = ["tokio"]
+tokio = ["dep:tokio"]
+
+[dependencies]
+mlua = { version = "0.9", features = ["async"] }
+async-channel = { version = "2" }
+oneshot = { version = "0.1" }
+futures-lite = { version = "2" }
+tokio = { version = "1", features = ["rt"], optional = true }

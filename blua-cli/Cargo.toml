@@ -10,7 +10,7 @@ name = "blua"
 path = "src/main.rs"
 
 [features]
-default = ["luajit", "blua-http/native-tls"]
+default = ["lua54", "vendored", "blua-http/native-tls"]
 lua54 = ["mlua/lua54"]
 lua53 = ["mlua/lua53"]
 luajit = ["mlua/luajit52"]

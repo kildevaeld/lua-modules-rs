@@ -340,6 +340,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "blua-worker"
+version = "0.1.0"
+dependencies = [
+ "async-channel",
+ "futures-lite",
+ "mlua",
+ "oneshot",
+ "tokio",
+]
+
+[[package]]
 name = "bstr"
 version = "1.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2221,7 +2232,7 @@ checksum = "49874b5167b65d7193b8aba1567f5c7d93d001cafc34600cee003eda787e483f"
 [[package]]
 name = "vfs"
 version = "0.6.0"
-source = "git+https://github.com/kildevaeld/vfs-rs?branch=v3#7e6d2c1f945cd926aa88326b5961c349fbca8bcb"
+source = "git+https://github.com/kildevaeld/vfs-rs?branch=v3#001e99eadd570260e955c5f76a4c911b54403991"
 dependencies = [
  "async-trait",
  "avagarden",

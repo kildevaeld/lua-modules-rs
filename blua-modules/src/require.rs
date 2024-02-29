@@ -1,8 +1,6 @@
-use std::sync::Arc;
-
-use mlua::{MetaMethod, Value};
-
 use crate::{error::LoadError, loader};
+use mlua::{MetaMethod, Value};
+use std::sync::Arc;
 
 pub struct RequireState {
     pub loaders: Vec<Box<dyn loader::ModuleLoader>>,
@@ -31,7 +29,7 @@ where
     Self: mlua::UserData,
     S: 'static,
 {
-    fn create_env<'a>(&self, vm: &'a mlua::Lua, module: &str) -> mlua::Result<mlua::Value<'a>> {
+    pub fn create_env<'a>(&self, vm: &'a mlua::Lua, module: &str) -> mlua::Result<mlua::Value<'a>> {
         let global = vm.create_table()?;
 
         for v in vm.globals().pairs::<Value, Value>() {
@@ -48,6 +46,32 @@ where
         )?;
 
         Ok(Value::Table(global))
+    }
+
+    fn get_cache<'a>(&self, vm: &'a mlua::Lua) -> mlua::Result<mlua::Table<'a>> {
+        let package: mlua::Table = vm.globals().get("package")?;
+        package.get("loaded")
+    }
+
+    fn check_cache<'a>(&self, vm: &'a mlua::Lua, path: &str) -> mlua::Result<mlua::Value<'a>> {
+        let val: mlua::Value = self.get_cache(vm)?.get(path)?;
+        if val.is_nil() {
+            return Err(mlua::Error::external("not found"));
+        }
+
+        Ok(val)
+    }
+
+    fn put_cache<'lua>(
+        &self,
+        vm: &'lua mlua::Lua,
+        name: &str,
+        value: mlua::Value<'lua>,
+    ) -> mlua::Result<()> {
+        let cache = self.get_cache(vm)?;
+        cache.set(name, value)?;
+
+        Ok(())
     }
 }
 
@@ -128,9 +152,15 @@ impl mlua::UserData for Require<RequireState> {
         methods.add_meta_method(MetaMethod::Call, |vm, this, module: mlua::String| {
             let resolved = this.resolve(module.to_str()?)?;
 
+            if let Ok(cached) = this.check_cache(vm, &resolved) {
+                return Ok(cached);
+            }
+
             let env = this.create_env(vm, &resolved)?;
 
             let value = this.read(vm, env, &resolved)?;
+
+            this.put_cache(vm, &resolved, value.clone())?;
 
             Ok(value)
         });
@@ -148,9 +178,15 @@ impl mlua::UserData for Require<AsyncRequireState> {
             |vm, this, module: mlua::String| async move {
                 let resolved = this.resolve(module.to_str()?).await?;
 
+                if let Ok(cached) = this.check_cache(vm, &resolved) {
+                    return Ok(cached);
+                }
+
                 let env = this.create_env(vm, &resolved)?;
 
                 let value = this.read(vm, env, &resolved).await?;
+
+                this.put_cache(vm, &resolved, value.clone())?;
 
                 Ok(value)
             },
