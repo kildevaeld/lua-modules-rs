@@ -27,7 +27,7 @@ pub struct Worker {
 
 impl Worker {
     #[cfg(feature = "tokio")]
-    fn create_handle<F>(
+    async fn create_handle<F>(
         sx: &Arc<mpsc::Sender<Msg>>,
         rx: mpsc::Receiver<Msg>,
         ready: oneshot::Sender<mlua::Result<()>>,

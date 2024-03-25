@@ -18,7 +18,11 @@
       "blua-image",
       "blua",
       "blua-cli",
-      "blua-http"
+      "blua-http",
+      "blua-vfs",
+      "blua-modules",
+      "blua-gerning",
+      "blua-worker"
     ],
     "resolver": "2"
   }
