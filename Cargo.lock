@@ -347,6 +347,7 @@ dependencies = [
  "futures-lite",
  "mlua",
  "oneshot",
+ "pin-project-lite",
  "tokio",
 ]
 

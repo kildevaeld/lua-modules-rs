@@ -6,18 +6,16 @@ use std::{
     thread::{spawn, JoinHandle},
 };
 
-trait Callback {
+pub trait Callback {
     fn call<'a>(
         self: Box<Self>,
         vm: &'a mlua::Lua,
     ) -> Pin<Box<dyn Future<Output = Result<Box<dyn Any + Send + 'static>, mlua::Error>> + 'a>>;
 }
 
-impl<T, E, U> Callback for T
+impl<T: 'static, E: 'static + Send> Callback for T
 where
-    T: FnOnce(&mlua::Lua) -> U + 'static,
-    U: Future<Output = mlua::Result<E>>,
-    E: Send + 'static,
+    for<'a> T: FnOnce(&'a mlua::Lua) -> Pin<Box<dyn Future<Output = Result<E, mlua::Error>> + 'a>>,
 {
     fn call<'a>(
         self: Box<Self>,
@@ -185,10 +183,9 @@ impl Worker {
         })
     }
 
-    pub async fn with_async<F, U, R>(&self, func: F) -> Result<R, mlua::Error>
+    pub async fn with_async<F: Send + 'static, R>(&self, func: F) -> Result<R, mlua::Error>
     where
-        F: FnOnce(&mlua::Lua) -> U + Send + 'static,
-        U: Future<Output = mlua::Result<R>>,
+        for<'a> F: FnOnce(&'a mlua::Lua) -> Pin<Box<dyn Future<Output = mlua::Result<R>> + 'a>>,
         R: 'static + Send,
     {
         let (sx, rx) = oneshot::channel();
@@ -210,10 +207,9 @@ impl Worker {
         }
     }
 
-    pub fn with<F, U, R>(&self, func: F) -> Result<R, mlua::Error>
+    pub fn with<F: Send + 'static, R>(&self, func: F) -> Result<R, mlua::Error>
     where
-        F: FnOnce(&mlua::Lua) -> U + Send + 'static,
-        U: Future<Output = mlua::Result<R>>,
+        for<'a> F: FnOnce(&'a mlua::Lua) -> Pin<Box<dyn Future<Output = mlua::Result<R>> + 'a>>,
         R: 'static + Send,
     {
         let (sx, rx) = oneshot::channel();
@@ -259,10 +255,9 @@ pub struct WeakWorker {
 }
 
 impl WeakWorker {
-    pub async fn with_async<F, U, R>(&self, func: F) -> Result<R, mlua::Error>
+    pub async fn with_async<F: Send + 'static, R>(&self, func: F) -> Result<R, mlua::Error>
     where
-        F: FnOnce(&mlua::Lua) -> U + Send + 'static,
-        U: Future<Output = mlua::Result<R>>,
+        for<'a> F: FnOnce(&'a mlua::Lua) -> Pin<Box<dyn Future<Output = mlua::Result<R>> + 'a>>,
         R: 'static + Send,
     {
         let (sx, rx) = oneshot::channel();
@@ -284,10 +279,9 @@ impl WeakWorker {
         }
     }
 
-    pub fn with<F, U, R>(&self, func: F) -> Result<R, mlua::Error>
+    pub fn with<F: Send + 'static, R>(&self, func: F) -> Result<R, mlua::Error>
     where
-        F: FnOnce(&mlua::Lua) -> U + Send + 'static,
-        U: Future<Output = mlua::Result<R>>,
+        for<'a> F: FnOnce(&'a mlua::Lua) -> Pin<Box<dyn Future<Output = mlua::Result<R>> + 'a>>,
         R: 'static + Send,
     {
         let (sx, rx) = oneshot::channel();
