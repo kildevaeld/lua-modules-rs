@@ -29,7 +29,7 @@ where
     }
 }
 
-pub struct Request {
+struct Request {
     callback: Box<dyn Callback + Send>,
     returns: oneshot::Sender<Result<Box<dyn Any + Send>, mlua::Error>>,
 }
@@ -121,7 +121,7 @@ impl Worker {
         Ok(handle)
     }
 
-    pub fn create<F, U>(
+    fn create<F, U>(
         init: F,
     ) -> mlua::Result<(
         oneshot::Receiver<mlua::Result<()>>,
@@ -238,6 +238,12 @@ impl Worker {
     fn send(&self, msg: Request) {
         if let Some(sx) = &self.sx {
             sx.send_blocking(msg).expect("send");
+        }
+    }
+
+    pub(crate) fn downgrade(&self) -> WeakWorker {
+        WeakWorker {
+            sender: self.sx.as_ref().unwrap().downgrade(),
         }
     }
 }
